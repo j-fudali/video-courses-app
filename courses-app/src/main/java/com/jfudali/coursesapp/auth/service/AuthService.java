@@ -34,36 +34,23 @@ public class AuthService {
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user;
-        try {
-            user = User.builder()
-                    .firstname(registerRequest.getFirstname())
-                    .lastname(registerRequest.getLastname())
-                    .email(registerRequest.getEmail())
-                    .password(passwordEncoder.encode(registerRequest.getPassword()))
-                    .type(EUserType.User)
-                    .build();
-            userRepository.save(user);
-
-        } catch (DataAccessException ex) {
-            if (ex.getCause() instanceof ConstraintViolationException)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-mail already exists");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot create new user");
-        }
+        user = User.builder()
+                .firstname(registerRequest.getFirstname())
+                .lastname(registerRequest.getLastname())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .type(EUserType.USER)
+                .build();
+        userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
     public AuthenticationResponse login(LoginRequest loginRequest) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
-            var jwtToken = jwtService.generateToken(user);
-            return AuthenticationResponse.builder().token(jwtToken).build();
-        } catch (AuthenticationException ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied");
-        } catch (ExpiredJwtException ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired");
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 }

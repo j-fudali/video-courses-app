@@ -1,21 +1,26 @@
 package com.jfudali.coursesapp.course.repository;
 
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.Nullable;
-
 import com.jfudali.coursesapp.course.model.Course;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+public class CourseQuerySpecification {
 
-public class CourseQuerySpecification implements Specification<Course> {
+    public static Specification<Course> withName(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (name == null || name.isEmpty()) {
+                return criteriaBuilder.isTrue(criteriaBuilder.literal(true)); // True predicate to get all records
+            }
+            return criteriaBuilder.like(root.get("name"), "%" + name + "%");
+        };
+    }
 
-    @Override
-    @Nullable
-    public Predicate toPredicate(Root<Course> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        // TODO
+    public static Specification<Course> withCategoryName(String categoryName) {
+        return (root, query, criteriaBuilder) -> {
+            if (categoryName == null || categoryName.isEmpty()) {
+                return criteriaBuilder.isTrue(criteriaBuilder.literal(true)); // True predicate to get all records
+            }
+            return criteriaBuilder.equal(root.get("category").get("name"), categoryName);
+        };
     }
 
 }

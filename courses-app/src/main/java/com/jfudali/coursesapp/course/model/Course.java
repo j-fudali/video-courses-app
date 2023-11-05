@@ -2,11 +2,9 @@ package com.jfudali.coursesapp.course.model;
 
 import java.math.BigDecimal;
 
-import org.hibernate.type.descriptor.jdbc.DecimalJdbcType;
-
 import com.jfudali.coursesapp.category.model.Category;
+import com.jfudali.coursesapp.user.model.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,15 +26,16 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class Course {
-    @Id
+    @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idcourse;
     private String name;
     @Column(precision = 10, scale = 2)
     private BigDecimal cost;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "category_idcategory", referencedColumnName = "idcategory")
     private Category category;
-    // @ManyToOne
-    // @JoinColumn(name = )
+    @ManyToOne()
+    @JoinColumn(name = "user_iduser", referencedColumnName = "iduser")
+    private User creator;
 }

@@ -1,5 +1,7 @@
 package com.jfudali.coursesapp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,13 +30,17 @@ public class SecurityConfig {
                                                 (authorizeHttpRequests) -> authorizeHttpRequests
                                                                 .requestMatchers("/auth/**", "/error")
                                                                 .permitAll()
+                                                                .requestMatchers(HttpMethod.GET, "/courses")
+                                                                .permitAll()
                                                                 .anyRequest()
                                                                 .authenticated())
                                 .sessionManagement(
                                                 (sessionManagement) -> sessionManagement
-                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                                                .sessionCreationPolicy(
+                                                                                SessionCreationPolicy.STATELESS))
                                 .authenticationProvider(authenticationProvider)
                                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
         }
+
 }
