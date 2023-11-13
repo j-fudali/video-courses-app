@@ -14,5 +14,5 @@ public class UpdateCourseRequest {
     @Nullable
     private String name;
     @Nullable
-    private Integer category;
+    private Integer categoryId;
 }

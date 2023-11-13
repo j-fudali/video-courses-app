@@ -8,4 +8,5 @@ import com.jfudali.coursesapp.user.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
+
 }

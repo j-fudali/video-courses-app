@@ -1,4 +1,4 @@
-package com.jfudali.coursesapp.user.model;
+package com.jfudali.coursesapp.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

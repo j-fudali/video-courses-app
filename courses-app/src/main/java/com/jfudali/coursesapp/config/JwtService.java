@@ -1,6 +1,5 @@
 package com.jfudali.coursesapp.config;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
