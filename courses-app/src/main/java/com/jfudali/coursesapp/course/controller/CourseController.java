@@ -1,6 +1,10 @@
 package com.jfudali.coursesapp.course.controller;
 
 import java.security.Principal;
+
+import com.jfudali.coursesapp.course.dto.GetCourseByIdResponse;
+import com.jfudali.coursesapp.dto.ResponseMessage;
+import com.jfudali.coursesapp.user.dto.BuyCourseRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import com.jfudali.coursesapp.course.dto.CreateCourseRequest;
+import com.jfudali.coursesapp.course.dto.CreateUpdateCourseRequest;
 import com.jfudali.coursesapp.course.dto.CreateUpdateCourseResponse;
 import com.jfudali.coursesapp.course.dto.GetAllCoursesResponse;
-import com.jfudali.coursesapp.course.dto.UpdateCourseRequest;
 import com.jfudali.coursesapp.course.model.Course;
 import com.jfudali.coursesapp.course.service.CourseService;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
@@ -38,11 +41,10 @@ import lombok.RequiredArgsConstructor;
 public class CourseController {
         private final CourseService courseService;
         private final ModelMapper modelMapper;
-
         @PreAuthorize("hasAuthority('ADMIN')")
         @PostMapping()
         public ResponseEntity<CreateUpdateCourseResponse> createCourse(
-                        @RequestBody @Valid CreateCourseRequest createCourseRequest,
+                        @RequestBody CreateUpdateCourseRequest createCourseRequest,
                         Principal principal) throws NotFoundException {
                 CreateUpdateCourseResponse courseResponse = modelMapper.map(
                                 courseService.createCourse(createCourseRequest, principal.getName()),
@@ -59,13 +61,17 @@ public class CourseController {
                                 .map(course -> modelMapper.map(course,
                                                 GetAllCoursesResponse.class)));
         }
+        @GetMapping("/{id}")
+        public  ResponseEntity<GetCourseByIdResponse> getCourseById(@PathVariable("id") Integer id) throws NotFoundException {
+                return new ResponseEntity<>(modelMapper.map(courseService.getCourseById(id), GetCourseByIdResponse.class), HttpStatus.OK);
+        }
 
         @PreAuthorize("hasAuthority('ADMIN')")
         @PatchMapping(value = "/{id}")
         public ResponseEntity<CreateUpdateCourseResponse> updateCourse(@PathVariable String id,
-                        @RequestBody UpdateCourseRequest updateCourseRequest, Principal principal)
+                        @RequestBody CreateUpdateCourseRequest createUpdateCourseRequest, Principal principal)
                         throws NumberFormatException, NotFoundException, OwnershipException {
-                Course updatedCourse = courseService.updateCourse(Integer.valueOf(id), updateCourseRequest,
+                Course updatedCourse = courseService.updateCourse(Integer.valueOf(id), createUpdateCourseRequest,
                                 principal.getName());
                 CreateUpdateCourseResponse courseResponse = modelMapper.map(
                                 updatedCourse,
@@ -80,7 +86,17 @@ public class CourseController {
         @ResponseStatus(value = HttpStatus.NO_CONTENT)
         public void deleteCourse(@PathVariable @NumberFormat Integer id, Principal principal)
                         throws NumberFormatException, NotFoundException, OwnershipException {
-                courseService.deleteCourse(Integer.valueOf(id), principal.getName());
+                courseService.deleteCourse(id, principal.getName());
+        }
+
+        @PostMapping(value = "/buy")
+        public ResponseEntity<ResponseMessage> buyCourse(@RequestBody BuyCourseRequest body,
+                                                         Principal principal)
+                throws NotFoundException, OwnershipException {
+                return new ResponseEntity<>
+                        (new ResponseMessage(courseService.addCourseToOwnedCourses(principal.getName(),
+                                                                                   body.getCourseId())),
+                         HttpStatus.OK);
         }
 
 }

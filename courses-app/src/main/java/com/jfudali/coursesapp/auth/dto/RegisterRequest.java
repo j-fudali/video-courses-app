@@ -1,4 +1,4 @@
-package com.jfudali.coursesapp.auth.model;
+package com.jfudali.coursesapp.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

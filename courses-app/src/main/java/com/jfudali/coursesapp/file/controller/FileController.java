@@ -2,6 +2,8 @@ package com.jfudali.coursesapp.file.controller;
 
 import java.io.IOException;
 
+import com.jfudali.coursesapp.exceptions.FileException;
+import jakarta.servlet.annotation.MultipartConfig;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +23,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<UploadFileResponse> uploadFile(@RequestPart(value = "video") MultipartFile video)
-            throws IOException {
+            throws IOException, FileException {
         return new ResponseEntity<UploadFileResponse>(new UploadFileResponse(this.fileService.uploadFile(video)),
                 HttpStatus.OK);
     }

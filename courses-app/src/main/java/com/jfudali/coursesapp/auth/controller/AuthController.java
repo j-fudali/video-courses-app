@@ -1,9 +1,9 @@
 package com.jfudali.coursesapp.auth.controller;
 
 import org.springframework.web.bind.annotation.RestController;
-import com.jfudali.coursesapp.auth.model.AuthenticationResponse;
-import com.jfudali.coursesapp.auth.model.LoginRequest;
-import com.jfudali.coursesapp.auth.model.RegisterRequest;
+import com.jfudali.coursesapp.auth.dto.AuthenticationResponse;
+import com.jfudali.coursesapp.auth.dto.LoginRequest;
+import com.jfudali.coursesapp.auth.dto.RegisterRequest;
 import com.jfudali.coursesapp.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

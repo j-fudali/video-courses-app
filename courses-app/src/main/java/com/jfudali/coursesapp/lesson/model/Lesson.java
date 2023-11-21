@@ -1,18 +1,16 @@
 package com.jfudali.coursesapp.lesson.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jfudali.coursesapp.course.model.Course;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.jfudali.coursesapp.quiz.model.Quiz;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "lesson")
@@ -27,7 +25,10 @@ public class Lesson {
     private String title;
     private String description;
     private String video;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "course_idcourse")
     private Course course;
+    @OneToMany(mappedBy = "lesson")
+    private  List<Quiz> quizzes;
 }

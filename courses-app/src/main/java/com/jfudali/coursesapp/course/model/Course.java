@@ -1,32 +1,23 @@
 package com.jfudali.coursesapp.course.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
+import com.jfudali.coursesapp.lesson.model.Lesson;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jfudali.coursesapp.category.model.Category;
 import com.jfudali.coursesapp.user.model.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Entity
 @Table(name = "course")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Course {
     @Id()
@@ -43,5 +34,6 @@ public class Course {
     private User creator;
     @ManyToMany(mappedBy = "courses")
     private Set<User> users;
-
+    @OneToMany(mappedBy = "course")
+    private List<Lesson> lessons;
 }
