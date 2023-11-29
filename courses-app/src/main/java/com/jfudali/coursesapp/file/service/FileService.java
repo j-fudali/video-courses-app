@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.jfudali.coursesapp.exceptions.FileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,10 @@ public class FileService {
         amazonS3.putObject(new PutObjectRequest(bucket, key,
                 multipartFile.getInputStream(), objectMetadata));
         return key;
+    }
+    public void deleteFile(String fileUrl){
+        //TODO
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileUrl));
     }
     private boolean isVideo(MultipartFile video){
         return (video.getContentType() != null && video.getContentType().startsWith("video"));

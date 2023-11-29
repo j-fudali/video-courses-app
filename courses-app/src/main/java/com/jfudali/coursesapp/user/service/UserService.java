@@ -18,6 +18,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
 
+    public User getUserByEmail(String email) throws NotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
     public Page<Course> getCurrentUserOwnedCourses(String email, Pageable pageable)
             throws NotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));

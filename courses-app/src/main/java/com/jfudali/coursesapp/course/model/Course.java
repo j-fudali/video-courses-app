@@ -34,6 +34,7 @@ public class Course {
     private User creator;
     @ManyToMany(mappedBy = "courses")
     private Set<User> users;
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lesson> lessons;
+
 }

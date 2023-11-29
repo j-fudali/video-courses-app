@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.xray.model.Http;
 import com.jfudali.coursesapp.exceptions.AlreadyExistsException;
 import com.jfudali.coursesapp.exceptions.FileException;
@@ -20,6 +22,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,6 +35,12 @@ import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(), ex.getMessage());
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -56,7 +65,7 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleAuthenticationException(Exception ex) {
         return  getApiErrorResponse(HttpStatus.UNAUTHORIZED, ex);
     }
-    @ExceptionHandler({ FileException.class, MethodArgumentTypeMismatchException.class, SQLIntegrityConstraintViolationException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler({SdkClientException.class, AmazonServiceException.class, FileException.class, MethodArgumentTypeMismatchException.class, SQLIntegrityConstraintViolationException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ApiError> handleBadRequestError(Exception ex) {
         return getApiErrorResponse(HttpStatus.BAD_REQUEST, ex);
     }
@@ -67,6 +76,7 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+        System.out.println(errors);
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }

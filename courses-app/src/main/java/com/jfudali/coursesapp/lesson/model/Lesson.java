@@ -1,6 +1,7 @@
 package com.jfudali.coursesapp.lesson.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.jfudali.coursesapp.course.model.Course;
 
 import com.jfudali.coursesapp.quiz.model.Quiz;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,7 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "course_idcourse")
     private Course course;
-    @OneToMany(mappedBy = "lesson")
-    private  List<Quiz> quizzes;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "quiz_idquiz")
+    private Quiz quiz;
 }

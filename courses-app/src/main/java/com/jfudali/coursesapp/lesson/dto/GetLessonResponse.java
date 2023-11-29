@@ -9,6 +9,6 @@ public class GetLessonResponse {
     private  String title;
     private  String description;
     private  String video;
-    private List<Quiz> quizzes;
+    private Quiz quiz;
 
 }

@@ -1,8 +1,9 @@
 package com.jfudali.coursesapp.lesson.service;
 
+import com.jfudali.coursesapp.dto.ResponseMessage;
 import com.jfudali.coursesapp.exceptions.OwnershipException;
+import com.jfudali.coursesapp.file.service.FileService;
 import com.jfudali.coursesapp.lesson.dto.UpdateLessonDto;
-import com.jfudali.coursesapp.user.model.User;
 import com.jfudali.coursesapp.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,6 @@ import com.jfudali.coursesapp.lesson.repository.LessonRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 @Service
 @Data
 @RequiredArgsConstructor
@@ -26,30 +24,43 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    public Lesson createLesson(Integer courseId, CreateLessonDto createLessonDto) throws NotFoundException {
+    private final FileService fileService;
+    public Lesson createLesson(Integer courseId, CreateLessonDto createLessonDto) throws NotFoundException, OwnershipException {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException("Course not found"));
         Lesson lesson = Lesson.builder().title(createLessonDto.getTitle())
                 .description(createLessonDto.getDescription()).video(createLessonDto.getVideo()).course(course)
                 .build();
-        lessonRepository.save(lesson);
+        course.getLessons().add(lesson);
+        courseRepository.save(course);
         return lesson;
     }
     public Lesson getLessonById(Integer lessonId) throws NotFoundException {
         return lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
     }
-    public Lesson updateLesson(String userEmail,Integer courseId, Integer lessonId, UpdateLessonDto updateLessonDto) throws NotFoundException, OwnershipException {
-        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new NotFoundException("User not found"));
+    public Lesson updateLesson(Integer lessonId, UpdateLessonDto updateLessonDto) throws NotFoundException, OwnershipException {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
-        System.out.println(user.getCourses().stream().noneMatch(course -> Objects.equals(course.getIdcourse(), courseId)));
-        if(user.getCourses().stream().noneMatch(course -> Objects.equals(course.getIdcourse(), courseId)))
-            throw new OwnershipException("You are not an onwer of this course");
         if(updateLessonDto.getTitle() != null)
             lesson.setTitle(updateLessonDto.getTitle());
         if(updateLessonDto.getDescription() != null)
             lesson.setDescription(updateLessonDto.getDescription());
-        if(updateLessonDto.getVideo() != null)
+        if(updateLessonDto.getVideo() != null){
+            //TODO
+            //Not working
+            fileService.deleteFile(lesson.getVideo());
             lesson.setVideo(updateLessonDto.getVideo());
+        }
         return lesson;
     }
+    public ResponseMessage deleteLesson(Integer lessonId) throws NotFoundException {
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
+        if(lesson.getVideo() != null){
+            //TODO
+            //Not working
+            fileService.deleteFile(lesson.getVideo());
+        }
+        lessonRepository.deleteById(lessonId);
+        return  new ResponseMessage("Lesson has been deleted");
+    }
+
 }

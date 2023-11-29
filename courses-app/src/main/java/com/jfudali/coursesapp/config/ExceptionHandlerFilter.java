@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,7 +21,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request,response);
         }
         catch (JwtException ex){
-            setErrorResponse(HttpStatus.BAD_REQUEST, response, ex);
+            setErrorResponse(HttpStatus.UNAUTHORIZED, response, ex);
         }
         catch (RuntimeException ex){
             setErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, response, ex);

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class CreateUpdateCourseRequest {
+public class CreateCourseDto {
     @NotBlank(message = "Name should not be empty")
     @NotNull(message = "Name should not be null")
     private String name;
