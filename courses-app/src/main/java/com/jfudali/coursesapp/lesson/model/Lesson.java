@@ -6,10 +6,7 @@ import com.jfudali.coursesapp.course.model.Course;
 
 import com.jfudali.coursesapp.quiz.model.Quiz;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,8 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
+@Setter
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +28,7 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "course_idcourse")
     private Course course;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "quiz_idquiz")
     private Quiz quiz;
 }

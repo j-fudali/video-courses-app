@@ -20,8 +20,10 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
+import static org.springframework.security.authorization.AuthenticatedAuthorizationManager.authenticated;
 import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority;
 import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.anyOf;
 
 @Configuration
 @EnableWebSecurity
@@ -43,16 +45,16 @@ public class SecurityConfig {
                                                     authorizeHttpRequests
                                                             .requestMatchers("/auth/**", "/error")
                                                             .permitAll()
-                                                            .requestMatchers(HttpMethod.GET, "/courses/")
-                                                            .permitAll()
-                                                            .requestMatchers(HttpMethod.GET, "/courses/{courseId}")
+                                                            .requestMatchers(HttpMethod.GET, "/courses", "/courses/{courseId}")
                                                             .permitAll()
                                                             .requestMatchers("/courses/{id}/buy")
                                                             .authenticated()
-                                                            .requestMatchers(HttpMethod.GET, "/courses/{courseId}/**")
+                                                            .requestMatchers(HttpMethod.POST, "/courses/{courseId}/lessons/{lessonId}/quiz/verify")
                                                             .access(courseOwnerAuthz)
+                                                            .requestMatchers(HttpMethod.GET, "/courses/{courseId}/**")
+                                                            .access(anyOf(courseOwnerAuthz, courseCreatorAuthz))
                                                             .requestMatchers("/courses/{courseId}/**")
-                                                            .access(allOf(courseCreatorAuthz, hasAuthority("ADMIN")))
+                                                            .access(allOf(authenticated(), hasAuthority("ADMIN"), courseCreatorAuthz))
                                                             .anyRequest()
                                                             .authenticated();
                                                 })

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.jfudali.coursesapp.lesson.model.Lesson;
+import com.jfudali.coursesapp.ownership.model.Ownership;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +33,8 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "user_iduser", referencedColumnName = "iduser")
     private User creator;
-    @ManyToMany(mappedBy = "courses")
-    private Set<User> users;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private Set<Ownership> ownerships;
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lesson> lessons;
 

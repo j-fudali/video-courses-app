@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyCourseRequest {
+public class BuyCourseDto {
     @NotBlank(message = "Course id cannot be empty")
     @NotNull(message = "Course id cannot be null")
     private Integer courseId;

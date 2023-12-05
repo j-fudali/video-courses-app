@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.services.xray.model.Http;
 import com.jfudali.coursesapp.exceptions.AlreadyExistsException;
 import com.jfudali.coursesapp.exceptions.FileException;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
 import com.jfudali.coursesapp.exceptions.OwnershipException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -26,12 +26,13 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.persistence.EntityExistsException;
-import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
@@ -41,7 +42,6 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(), ex.getMessage());
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
-
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Request is missing a body", "Required request body is missing");
@@ -51,6 +51,12 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ApiError> getApiErrorResponse(HttpStatus status, Throwable throwable){
         String error = throwable.getMessage();
         ApiError apiError = new ApiError(status, throwable.getLocalizedMessage(), error);
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+    @ExceptionHandler({ResponseStatusException.class})
+    public ResponseEntity<ApiError> handleResponseStatusException(ResponseStatusException ex){
+        String error = ex.getReason();
+        ApiError apiError = new ApiError(HttpStatus.valueOf(ex.getStatusCode().value()), ex.getLocalizedMessage(), error);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
     @ExceptionHandler({AlreadyExistsException.class, EntityExistsException.class})
@@ -65,19 +71,26 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleAuthenticationException(Exception ex) {
         return  getApiErrorResponse(HttpStatus.UNAUTHORIZED, ex);
     }
-    @ExceptionHandler({SdkClientException.class, AmazonServiceException.class, FileException.class, MethodArgumentTypeMismatchException.class, SQLIntegrityConstraintViolationException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler({SdkClientException.class, AmazonServiceException.class, FileException.class,SQLIntegrityConstraintViolationException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiError> handleBadRequestError(Exception ex) {
         return getApiErrorResponse(HttpStatus.BAD_REQUEST, ex);
     }
-
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDaoExceptions(DataIntegrityViolationException ex){
+        String error = ((ConstraintViolationException)ex.getCause()).getConstraintName();
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Unhandled DAO exception", "Unhandled DAO exception");
+        if (error.endsWith("email_UNIQUE")){
+            apiError = new ApiError(HttpStatus.CONFLICT, "E-mail is already used", "E-mail is already used");
+        }
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
     @Override
     @Nullable
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
-        System.out.println(errors);
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid data provided", errors);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
@@ -86,16 +99,6 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFoundException(Exception ex) {
         return getApiErrorResponse(HttpStatus.NOT_FOUND, ex);
-    }
-
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex,
-            WebRequest request) {
-        List<String> errors = new ArrayList<>();
-        ex.getConstraintViolations().forEach(cv -> errors.add(cv.getMessage()));
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return new ResponseEntity<ApiError>(apiError, apiError.getStatus());
     }
 
     @ExceptionHandler({ Exception.class })

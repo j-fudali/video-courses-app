@@ -1,16 +1,20 @@
 package com.jfudali.coursesapp.user.dto;
 
 import com.jfudali.coursesapp.category.model.Category;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.math.BigDecimal;
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OwnedCoursesResponse {
+public class CreatedCoursesDto {
     private Integer idcourse;
     private String name;
+    private BigDecimal cost;
     private Category category;
 }

@@ -3,11 +3,6 @@ package com.jfudali.coursesapp.course.controller;
 import java.security.Principal;
 
 import com.jfudali.coursesapp.course.dto.*;
-import com.jfudali.coursesapp.dto.ResponseMessage;
-import com.jfudali.coursesapp.user.dto.BuyCourseRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,32 +45,33 @@ public class CourseController {
         }
 
         @GetMapping()
-        public ResponseEntity<Page<GetAllCoursesResponse>> getAllCourses(@RequestParam(required = false) String name,
-                        @RequestParam(required = false) String category, Pageable pageable) {
+        public ResponseEntity<Page<GetAllCoursesDto>> getAllCourses(@RequestParam(required = false) String name,
+                                                                    @RequestParam(required = false) String category, Pageable pageable) {
 
                 return ResponseEntity.ok().body(courseService.getAllCourses(name, category, pageable)
                                 .map(course -> modelMapper.map(course,
-                                                GetAllCoursesResponse.class)));
+                                                GetAllCoursesDto.class)));
         }
         @GetMapping("/{id}")
-        public  ResponseEntity<GetCourseByIdResponse> getCourseById(@PathVariable("id") Integer id) throws NotFoundException {
-                return new ResponseEntity<>(modelMapper.map(courseService.getCourseById(id), GetCourseByIdResponse.class), HttpStatus.OK);
+        public  ResponseEntity<CourseDto> getCourseById(@PathVariable("id") Integer id) throws NotFoundException {
+                return new ResponseEntity<>(modelMapper.map(courseService.getCourseById(id), CourseDto.class), HttpStatus.OK);
         }
 
         @PatchMapping(value = "/{id}")
-        public ResponseEntity<UpdateCourseDto> updateCourse(@PathVariable String id,
+        public ResponseEntity<CourseDto> updateCourse(@PathVariable String id,
                                                                        @RequestBody UpdateCourseDto updateCourseDto, Principal principal)
                         throws NumberFormatException, NotFoundException, OwnershipException {
                 Course updatedCourse = courseService.updateCourse(Integer.valueOf(id), updateCourseDto,
                                                                   principal.getName());
-                UpdateCourseDto courseResponse = modelMapper.map(
+                CourseDto courseResponse = modelMapper.map(
                                 updatedCourse,
-                                UpdateCourseDto.class);
-                return new ResponseEntity<UpdateCourseDto>(
+                                CourseDto.class);
+                return new ResponseEntity<>(
                                 courseResponse,
                                 HttpStatus.OK);
         }
-//        Consider this ability for courses creators
+        //TODO
+        // Consider this ability for courses creators, think about ability to close for sale f.e
 //        @PreAuthorize("hasAuthority('ADMIN')")
 //        @DeleteMapping(value = "/{id}")
 //        public ResponseEntity<ResponseMessage> deleteCourse(@PathVariable @NumberFormat Integer id, Principal principal)
@@ -83,16 +79,6 @@ public class CourseController {
 //                return new ResponseEntity<>(courseService.deleteCourse(id, principal.getName()), HttpStatus.OK);
 //        }
 
-        @PostMapping(value = "/{id}/buy")
-        public ResponseEntity<ResponseMessage> buyCourse(@PathVariable("id") @Valid
-                                                                 @NotNull(message = "Course id cannot be null")
-                                                                 Integer id,
-                                                         Principal principal)
-                throws NotFoundException, OwnershipException {
-                return new ResponseEntity<>
-                        (new ResponseMessage(courseService.addCourseToOwnedCourses(principal.getName(),
-                                                                                   id)),
-                         HttpStatus.OK);
-        }
+
 
 }

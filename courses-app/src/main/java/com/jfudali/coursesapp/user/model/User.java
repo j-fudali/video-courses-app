@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.jfudali.coursesapp.answer.model.Answer;
+import com.jfudali.coursesapp.ownership.model.Ownership;
+import com.jfudali.coursesapp.quiz.model.Quiz;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,14 +38,12 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private EUserType type;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<Ownership> ownerships;
+
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinTable(name = "ownership", joinColumns = @JoinColumn(name = "user_iduser", referencedColumnName = "iduser"), inverseJoinColumns = @JoinColumn(name = "course_idcourse", referencedColumnName = "idcourse"))
-    private Set<Course> courses;
-
-    public void buyNewCourse(Course course) {
-        this.courses.add(course);
-    }
-
+    @JoinTable(name = "passed_quiz", joinColumns = @JoinColumn(name = "user_iduser", referencedColumnName = "iduser"), inverseJoinColumns = @JoinColumn(name = "quiz_idquiz", referencedColumnName = "idquiz"))
+    private List<Quiz> quizzes;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(type.name()));

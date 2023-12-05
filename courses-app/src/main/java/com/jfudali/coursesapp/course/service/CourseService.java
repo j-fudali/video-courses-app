@@ -42,7 +42,7 @@ public class CourseService {
         @Transactional
         public Course getCourseById(Integer id) throws NotFoundException {
                 return courseRepository.findById(id)
-                                .orElseThrow(() -> new NotFoundException("Course with provided id not found"));
+                                .orElseThrow(() -> new NotFoundException("Course not found"));
         }
 
         public Page<Course> getAllCourses(String name, String category, Pageable pagination) {
@@ -64,29 +64,9 @@ public class CourseService {
                 return course;
         }
 
-        @Transactional
         public ResponseMessage deleteCourse(Integer id, String userEmail) throws NotFoundException, OwnershipException {
-                Course course = this.getCourseById(id);
-                for (User user :
-                        course.getUsers()) {
-                        user.getCourses().remove(course);
-                }
-                course.getUsers().clear();
                 courseRepository.deleteById(id);
                 return new ResponseMessage("Course has been deleted");
         }
-        @Transactional
-        public String addCourseToOwnedCourses(String email, Integer courseId) throws NotFoundException, OwnershipException {
-                User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
-                Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
-                if(course.getCreator().equals(user)) throw new OwnershipException("You cannot buy this course, because you are an owner of it");
-                if(user.getCourses().contains(course)) throw  new AlreadyExistsException("You already bought this course");
-                user.getCourses().add(course);
-                course.getUsers().add(user);
-                userRepository.save(user);
-                courseRepository.save(course);
-                return "You bought course named: " + course.getName();
 
-
-        }
 }

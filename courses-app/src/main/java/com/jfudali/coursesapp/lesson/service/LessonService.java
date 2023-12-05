@@ -17,6 +17,9 @@ import com.jfudali.coursesapp.lesson.repository.LessonRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
+
 @Service
 @Data
 @RequiredArgsConstructor
@@ -35,32 +38,36 @@ public class LessonService {
         courseRepository.save(course);
         return lesson;
     }
-    public Lesson getLessonById(Integer lessonId) throws NotFoundException {
-        return lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
-    }
-    public Lesson updateLesson(Integer lessonId, UpdateLessonDto updateLessonDto) throws NotFoundException, OwnershipException {
+    public Lesson getLessonById(Integer courseId, Integer lessonId) throws NotFoundException {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
-        if(updateLessonDto.getTitle() != null)
+        checkIsLessonPartOfCourse(lesson, courseId);
+        return lesson;
+    }
+    public Lesson updateLesson(Integer courseId, Integer lessonId, UpdateLessonDto updateLessonDto) throws NotFoundException, OwnershipException {
+        Lesson lesson = this.getLessonById(courseId, lessonId);
+        if (!lesson.getCourse().getIdcourse().equals(courseId))
+            throw new NotFoundException("Lesson of provided course id not found");
+        if (updateLessonDto.getTitle() != null)
             lesson.setTitle(updateLessonDto.getTitle());
-        if(updateLessonDto.getDescription() != null)
+        if (updateLessonDto.getDescription() != null)
             lesson.setDescription(updateLessonDto.getDescription());
-        if(updateLessonDto.getVideo() != null){
-            //TODO
-            //Not working
+        if (updateLessonDto.getVideo() != null) {
             fileService.deleteFile(lesson.getVideo());
             lesson.setVideo(updateLessonDto.getVideo());
         }
+        lessonRepository.save(lesson);
         return lesson;
     }
-    public ResponseMessage deleteLesson(Integer lessonId) throws NotFoundException {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson not found"));
-        if(lesson.getVideo() != null){
-            //TODO
-            //Not working
-            fileService.deleteFile(lesson.getVideo());
+        public ResponseMessage deleteLesson (Integer courseId, Integer lessonId) throws NotFoundException {
+            Lesson lesson = this.getLessonById(courseId, lessonId);
+            if (lesson.getVideo() != null) {
+                fileService.deleteFile(lesson.getVideo());
+            }
+            lessonRepository.deleteById(lessonId);
+            return new ResponseMessage("Lesson has been deleted");
         }
-        lessonRepository.deleteById(lessonId);
-        return  new ResponseMessage("Lesson has been deleted");
-    }
+        private void checkIsLessonPartOfCourse(Lesson lesson, Integer courseId){
+            if(!lesson.getCourse().getIdcourse().equals(courseId)) throw new NotFoundException("Lesson of course with provided id not found");
+        }
 
 }
