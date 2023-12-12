@@ -1,0 +1,28 @@
+<div class="search" [style.marginTop]="isGtSm ? '0' : '20px'">
+    <h2 [style.fontSize]="isGtSm ? '48px' : '24px'">Search Courses</h2>
+    <app-search-courses [style.width]="isGtSm ? '60%' : '90%'"></app-search-courses>
+</div>
+<div class="informations"
+    [style]="isGtSm ? {flexDirection: 'row', justifyContent: 'space-between'} :  {flexDirection: 'column', justifyContent: 'flex-start'}">
+    <div [style.width]="isGtSm ? '50%' : '100%'">
+        <h2 [style.textAlign]="isGtSm ? 'left' : 'center'">Learn new things!</h2>
+        <p [style.textAlign]="isGtSm ? 'left' : 'justify'">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus repellat inventore mollitia
+            repellendus
+            veritatis nobis, omnis dicta, placeat facere vel aliquid? Voluptatibus minima optio ducimus sunt
+            corporis at, laborum consequatur sapiente. Enim, minus fugit? Voluptatum impedit sint placeat nemo
+            blanditiis voluptate debitis veniam adipisci exercitationem. Dicta rerum quaerat tempore laboriosam.
+        </p>
+    </div>
+    <mat-divider [vertical]="isGtSm"></mat-divider>
+    <div [style]="isGtSm ? {width: '50%', textAlign: 'right'} : {width: '100%', textAlign: 'center'}">
+        <h2>Create courses!</h2>
+        <p [style.textAlign]="isGtSm ? 'right' : 'justify'">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt qui ut praesentium quo a consectetur
+            quasi dignissimos impedit! Ipsam fuga at nobis voluptas ipsa laboriosam est, eligendi placeat quod,
+            reprehenderit consectetur error, temporibus sapiente modi voluptates ex cupiditate illo
+            necessitatibus!
+            Voluptatem quos eos tenetur consectetur, sint quasi ipsa numquam reprehenderit!
+        </p>
+    </div>
+</div>
