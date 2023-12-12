@@ -1,0 +1,26 @@
+<div class="container">
+    <mat-toolbar [style.fontSize]="isGtSm ? '12px': '16px'" class="mat-elevation-z4" color="primary">
+        <div>
+            @if (!isGtSm) {
+            <button (click)="toggleSidenav()" mat-icon-button><mat-icon>menu</mat-icon></button>
+            }
+            <h1 [style.fontSize]="isGtSm ? '24px': '18px'">{{ title }}</h1>
+        </div>
+    </mat-toolbar>
+    <mat-sidenav-container>
+        <mat-sidenav [style.width]="isGtSm ? '15%' : '40%'" [mode]="isGtSm ? 'side' : 'over'" (closed)="closeSidenav()"
+            [opened]="sidenavOpened() || isGtSm" #sidenav>
+            <mat-nav-list>
+                @for (link of links; track link) {
+                <a mat-list-item [routerLink]="link.path" [activated]="link.isActive">{{link.name}}</a>
+                }
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content [style.width]="isGtSm ? '90%' : '100%'">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+    <footer>
+        <span>&copy; Jakub Fudali</span>
+    </footer>
+</div>

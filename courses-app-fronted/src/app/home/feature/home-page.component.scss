@@ -1,0 +1,29 @@
+@use "@angular/material" as mat;
+
+:host {
+  display: block;
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+}
+
+.search {
+  h2 {
+    text-align: center;
+  }
+  app-search-courses {
+    margin: 0 auto;
+  }
+}
+.informations {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  div:first-child {
+    text-align: left;
+  }
+}

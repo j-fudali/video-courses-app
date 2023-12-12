@@ -1,0 +1,30 @@
+@use "@angular/material" as mat;
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+mat-toolbar {
+  z-index: 2;
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+mat-nav-list {
+  text-align: center;
+}
+footer {
+  background-color: mat.get-color-from-palette(mat.$deep-purple-palette, 500);
+  padding: 25px 0 25px 0;
+  text-align: center;
+  span {
+    font-size: 18px;
+    color: #fff;
+  }
+}
