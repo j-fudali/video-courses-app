@@ -8,7 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 public interface OwnershipRepository extends JpaRepository<Ownership, OwnershipKey> {
     @Query("SELECT new com.jfudali.coursesapp.user.dto.OwnedCoursesDto(o.course.idcourse ,o.course.name, o.course.category, o.isCompleted) FROM Ownership o WHERE o.user.email = ?1")
     Page<OwnedCoursesDto> findCoursesOwnedByUser(String email, Pageable pageable);
+    Optional<Ownership> findByCourseIdcourseAndUserEmail(Integer course_idcourse, String user_email);
 }

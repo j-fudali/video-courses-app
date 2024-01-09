@@ -16,6 +16,9 @@
           "skipTests": true
         }
       },
+      "i18n": {
+        "sourceLocale": "pl"
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",

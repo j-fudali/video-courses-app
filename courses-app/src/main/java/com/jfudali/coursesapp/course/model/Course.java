@@ -25,6 +25,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idcourse;
     private String name;
+    private String description;
     @Column(precision = 10, scale = 2)
     private BigDecimal cost;
     @ManyToOne

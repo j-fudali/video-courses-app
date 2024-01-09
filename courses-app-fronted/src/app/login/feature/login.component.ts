@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -7,7 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { LoginService } from '../data-access/login.service';
-import { LoginCredentials } from '../../shared/interfaces/loginCredentials';
+import { LoginCredentials } from '../../shared/interfaces/LoginCredentials';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../shared/data-access/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { jwtDecode } from 'jwt-decode';
+import { JwtToken } from '../../shared/interfaces/JwtToken';
+import { catchError, throwError } from 'rxjs';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -19,79 +25,69 @@ import { LoginCredentials } from '../../shared/interfaces/loginCredentials';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    RouterModule,
   ],
-  template: ` <mat-card>
-    <mat-card-header>
-      <mat-card-title>Login</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="loginForm">
-        <mat-form-field>
-          <mat-label>E-mail</mat-label>
-          <input
-            matInput
-            type="email"
-            name="email"
-            id="email"
-            formControlName="email"
-          />
-          @if(email && email.invalid){
-          <mat-error>{{ getEmailError() }}</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Password</mat-label>
-          <input
-            matInput
-            type="password"
-            name="password"
-            id="password"
-            formControlName="password"
-          />
-          @if(password && password.invalid){
-          <mat-error>{{ getPasswordError() }}</mat-error>
-          }
-        </mat-form-field>
-      </form>
-    </mat-card-content>
-    <mat-card-actions>
-      <button
-        (click)="login()"
-        [disabled]="!loginForm.valid"
-        mat-button
-        type="button"
-      >
-        Login
-      </button>
-    </mat-card-actions>
-    <mat-card-footer>
-      <mat-progress-bar
-        *ngIf="showLoader"
-        mode="indeterminate"
-      ></mat-progress-bar>
-    </mat-card-footer>
-  </mat-card>`,
-  styles: `
-    :host{
-      display: block;
-      height: 85vh;
-      display: flex;
-      justify-content: center;
-      align-items: center
-    }
-    form{
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    button{
-      width: 100%;
-    }
+  template: `
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Login</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <mat-form-field>
+            <mat-label>E-mail</mat-label>
+            <input
+              matInput
+              type="email"
+              name="email"
+              id="email"
+              formControlName="email"
+            />
+            @if(email && email.invalid){
+            <mat-error>{{ getEmailError() }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              name="password"
+              id="password"
+              formControlName="password"
+            />
+            @if(password && password.invalid){
+            <mat-error>{{ getPasswordError() }}</mat-error>
+            }
+          </mat-form-field>
+          <button
+            type="submit"
+            [disabled]="loginForm.invalid"
+            mat-raised-button
+            color="primary"
+          >
+            Login
+          </button>
+        </form>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button [routerLink]="['/sign-up']">Create account</a>
+      </mat-card-actions>
+      <mat-card-footer>
+        @if(showLoader){
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+      </mat-card-footer>
+    </mat-card>
   `,
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private loginService = inject(LoginService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   showLoader = false;
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -106,13 +102,30 @@ export class LoginComponent {
   }
 
   login() {
-    this.showLoader = true;
     if (this.loginForm.valid && this.loginForm.dirty) {
+      this.showLoader = true;
       const loginCredentials: LoginCredentials = this.loginForm.getRawValue();
-      this.loginService.login(loginCredentials).subscribe(({ token }) => {
-        this.showLoader = false;
-        console.log(token);
-      });
+      this.loginService
+        .login(loginCredentials)
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError((err) => {
+            this.showLoader = false;
+            return throwError(() => err);
+          })
+        )
+        .subscribe(({ token }) => {
+          this.showLoader = false;
+          this.authService.decodeAndStoreTokenData(token);
+          this.router.navigate(['/me/courses'], {
+            queryParams: {
+              type:
+                this.authService.getUserRole() === 'ADMIN'
+                  ? 'created'
+                  : 'owned',
+            },
+          });
+        });
     }
   }
   getEmailError() {

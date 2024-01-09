@@ -1,5 +1,6 @@
 package com.jfudali.coursesapp.config;
 
+import com.jfudali.coursesapp.exceptions.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ public class ApplicationConfig {
     @Bean
     UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
     }
 

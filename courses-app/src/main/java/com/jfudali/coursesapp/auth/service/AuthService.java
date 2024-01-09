@@ -1,5 +1,6 @@
 package com.jfudali.coursesapp.auth.service;
 
+import com.jfudali.coursesapp.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class
 AuthService {
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -42,7 +44,7 @@ AuthService {
     public AuthenticationResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var user = userService.getUserByEmail(loginRequest.getEmail());
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }

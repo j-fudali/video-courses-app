@@ -2,6 +2,8 @@ package com.jfudali.coursesapp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfudali.coursesapp.errors.ApiError;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +20,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static org.springframework.security.authorization.AuthenticatedAuthorizationManager.authenticated;
 import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority;
@@ -34,25 +40,30 @@ public class SecurityConfig {
         private final ExceptionHandlerFilter exceptionHandlerFilter;
         @Qualifier("delegatedAuthenticationEntryPoint")
         private final AuthenticationEntryPoint authenticationEntryPoint;
+
+
+
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                        @Qualifier("courseCreatorAuthorizationManager") AuthorizationManager<RequestAuthorizationContext> courseCreatorAuthz,
                                                        @Qualifier("courseOwnerAuthorizationManager") AuthorizationManager<RequestAuthorizationContext> courseOwnerAuthz) throws Exception {
                 http
-                                .csrf(AbstractHttpConfigurer::disable)
+                        .cors((cors) -> cors.configurationSource(corsConfigurationSource())
+                        )
+                        .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(
                                                 (authorizeHttpRequests) -> {
                                                     authorizeHttpRequests
-                                                            .requestMatchers("/auth/**", "/error")
+                                                            .requestMatchers("/auth/**", "/error", "/categories")
                                                             .permitAll()
                                                             .requestMatchers(HttpMethod.GET, "/courses", "/courses/{courseId}")
                                                             .permitAll()
                                                             .requestMatchers("/courses/{id}/buy")
                                                             .authenticated()
                                                             .requestMatchers(HttpMethod.POST, "/courses/{courseId}/lessons/{lessonId}/quiz/verify")
-                                                            .access(courseOwnerAuthz)
+                                                            .access(allOf(authenticated(), courseOwnerAuthz))
                                                             .requestMatchers(HttpMethod.GET, "/courses/{courseId}/**")
-                                                            .access(anyOf(courseOwnerAuthz, courseCreatorAuthz))
+                                                            .access(allOf(authenticated(), anyOf(courseOwnerAuthz, courseCreatorAuthz)))
                                                             .requestMatchers("/courses/{courseId}/**")
                                                             .access(allOf(authenticated(), hasAuthority("ADMIN"), courseCreatorAuthz))
                                                             .anyRequest()
@@ -82,5 +93,17 @@ public class SecurityConfig {
                         response.getWriter().write(new ObjectMapper().writeValueAsString(apiError));
                 };
         }
+        @Bean
+        CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration cors = new CorsConfiguration();
+                cors.setAllowedOrigins(
+                        List.of("http://localhost:4200"));
+                cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                cors.setAllowedHeaders(List.of("*"));
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", cors);
+                return source;
+        }
+
 
 }

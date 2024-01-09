@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class GetAllCoursesDto {
     private Integer idcourse;
     private String name;
+    private String description;
     private BigDecimal cost;
     private Category category;
     private PublicUserDto creator;

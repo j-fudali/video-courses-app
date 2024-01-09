@@ -3,6 +3,7 @@ package com.jfudali.coursesapp.course.controller;
 import java.security.Principal;
 
 import com.jfudali.coursesapp.course.dto.*;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,20 +29,19 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping(value = "/courses")
 @RequiredArgsConstructor
-@Validated
 public class CourseController {
         private final CourseService courseService;
         private final ModelMapper modelMapper;
         @PreAuthorize("hasAuthority('ADMIN')")
         @PostMapping()
-        public ResponseEntity<CreateCourseDto> createCourse(
-                        @RequestBody CreateCourseDto createCourseRequest,
+        public ResponseEntity<CourseDto> createCourse(
+                        @RequestBody @Valid CreateCourseDto createCourseRequest,
                         Principal principal) throws NotFoundException {
-                CreateCourseDto courseResponse = modelMapper.map(
+                CourseDto courseResponse = modelMapper.map(
                                 courseService.createCourse(createCourseRequest, principal.getName()),
-                                CreateCourseDto.class);
-                return new ResponseEntity<CreateCourseDto>(courseResponse,
-                                HttpStatus.CREATED);
+                                CourseDto.class);
+                return new ResponseEntity<>(courseResponse,
+                                            HttpStatus.CREATED);
         }
 
         @GetMapping()
@@ -59,7 +59,7 @@ public class CourseController {
 
         @PatchMapping(value = "/{id}")
         public ResponseEntity<CourseDto> updateCourse(@PathVariable String id,
-                                                                       @RequestBody UpdateCourseDto updateCourseDto, Principal principal)
+                                                                       @RequestBody @Valid UpdateCourseDto updateCourseDto, Principal principal)
                         throws NumberFormatException, NotFoundException, OwnershipException {
                 Course updatedCourse = courseService.updateCourse(Integer.valueOf(id), updateCourseDto,
                                                                   principal.getName());

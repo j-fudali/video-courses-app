@@ -1,0 +1,37 @@
+<div class="container">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" color="primary">
+        <input matInput [formControl]="searchName" type="text" />
+        <div matSuffix class="search-actions">
+            <button mat-icon-button (click)="cancelSearchName()">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <button (click)="search()" mat-icon-button>
+                <mat-icon>search</mat-icon>
+            </button>
+        </div>
+        <div matPrefix class="categories">
+            <button [matMenuTriggerFor]="menu" mat-icon-button>
+                <mat-icon>filter_list</mat-icon>
+            </button>
+            @if(category.value && category.value[0] && showCategoryChip){
+            <mat-chip>{{ category.value[0]
+                }}<button (click)="cancelCategory()" matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                </button></mat-chip>
+            }
+        </div>
+    </mat-form-field>
+</div>
+<mat-menu #menu>
+    <mat-selection-list [formControl]="category" multiple="false" [required]="false">
+        @for(category of categories; track category.id){
+        <mat-list-option [value]="category.name">{{
+            category.name
+            }}</mat-list-option>
+        }
+    </mat-selection-list>
+    <button class="show-all" (click)="showAll()" mat-raised-button color="accent">
+        Show all
+    </button>
+    <button class="reset" (click)="$event.stopPropagation();category.reset()" mat-stroked-button>Reset</button>
+</mat-menu>

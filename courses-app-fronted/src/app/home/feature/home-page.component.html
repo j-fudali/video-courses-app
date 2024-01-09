@@ -1,6 +1,7 @@
 <div class="search" [style.marginTop]="isGtSm ? '0' : '20px'">
-    <h2 [style.fontSize]="isGtSm ? '48px' : '24px'">Search Courses</h2>
-    <app-search-courses [style.width]="isGtSm ? '60%' : '90%'"></app-search-courses>
+    <h2 [style.fontSize]="isGtSm ? '48px' : '32px'">Search Courses</h2>
+    <app-search-courses [categories]="categories$ | async" (searchEmit)="search($event)" (showAllEmit)="showAll()"
+        [style.width]="isGtSm ? '60%' : '90%'"></app-search-courses>
 </div>
 <div class="informations"
     [style]="isGtSm ? {flexDirection: 'row', justifyContent: 'space-between'} :  {flexDirection: 'column', justifyContent: 'flex-start'}">

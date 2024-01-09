@@ -1,22 +1,36 @@
 <div class="container">
     <mat-toolbar [style.fontSize]="isGtSm ? '12px': '16px'" class="mat-elevation-z4" color="primary">
         <div>
-            @if (!isGtSm) {
+            @if (!isGtSm && isLoggedIn()) {
             <button (click)="toggleSidenav()" mat-icon-button><mat-icon>menu</mat-icon></button>
             }
-            <h1 [style.fontSize]="isGtSm ? '24px': '18px'">{{ title }}</h1>
+            <a routerLink="/home" mat-button [style.fontSize]="isGtSm ? '24px': '16px'">{{ title }}</a>
+        </div>
+        <div>
+            @if (isLoggedIn()) {
+            @if(isGtSm){
+            @for (link of links; track link.name) {
+            <a [routerLink]="[link.path]" routerLinkActive="active" mat-button>{{link.name}}</a>
+            }
+            }
+            <button mat-raised-button (click)="logout()">Logout</button>
+            }
+            @else {
+            <a routerLink="/login" mat-stroked-button>Login</a>
+            <a color="accent" routerLink="/sign-up" mat-raised-button>Sign-up</a>
+            }
         </div>
     </mat-toolbar>
     <mat-sidenav-container>
-        <mat-sidenav [style.width]="isGtSm ? '15%' : '40%'" [mode]="isGtSm ? 'side' : 'over'" (closed)="closeSidenav()"
-            [opened]="sidenavOpened() || isGtSm" #sidenav>
+        <mat-sidenav #sidenav class="sidenav" mode="over" (closed)="closeSidenav()" [opened]="sidenavOpened">
             <mat-nav-list>
                 @for (link of links; track link) {
-                <a mat-list-item [routerLink]="link.path" [activated]="link.isActive">{{link.name}}</a>
+                <a mat-list-item (click)="sidenav.close()" [routerLink]="link.path"
+                    [activated]="link.isActive">{{link.name}}</a>
                 }
             </mat-nav-list>
         </mat-sidenav>
-        <mat-sidenav-content [style.width]="isGtSm ? '90%' : '100%'">
+        <mat-sidenav-content class="content">
             <router-outlet></router-outlet>
         </mat-sidenav-content>
     </mat-sidenav-container>

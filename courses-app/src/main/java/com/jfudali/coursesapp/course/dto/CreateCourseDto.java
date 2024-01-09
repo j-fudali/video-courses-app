@@ -5,9 +5,11 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @AllArgsConstructor
@@ -16,12 +18,14 @@ import lombok.NoArgsConstructor;
 public class CreateCourseDto {
     @NotBlank(message = "Name should not be empty")
     @NotNull(message = "Name should not be null")
+    @Length(message = "Name maximum length is 45 characters", max = 45)
     private String name;
-    @NotBlank(message = "Cost should not be empty")
+    @NotBlank(message = "Description should not be empty")
+    @NotNull(message = "Description should not be null")
+    @Length(min = 1, max = 500, message = "Description must be between 1 and 500 characters long")
+    private String description;
     @NotNull(message = "Cost should not be null")
-    @Max(message = "Name maximum length is 45 characters", value = 45)
     private BigDecimal cost;
-    @NotBlank(message = "CategoryId should not be empty")
     @NotNull(message = "CategoryId should not be null")
     private Integer categoryId;
 }

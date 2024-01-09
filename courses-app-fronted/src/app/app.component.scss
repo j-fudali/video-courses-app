@@ -10,14 +10,29 @@ mat-toolbar {
   top: 0;
   display: flex;
   justify-content: space-between;
-  div {
+  div:first-child {
     display: flex;
     align-items: center;
     gap: 5px;
   }
+  div:last-child {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    gap: 5px;
+  }
+}
+.active {
+  color: mat.get-color-from-palette(mat.$deep-purple-palette, A100) !important;
 }
 mat-nav-list {
   text-align: center;
+}
+.sidenav {
+  width: 35%;
+}
+.content {
+  padding: 10px 0;
 }
 footer {
   background-color: mat.get-color-from-palette(mat.$deep-purple-palette, 500);

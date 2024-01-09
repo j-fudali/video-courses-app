@@ -1,12 +1,12 @@
 package com.jfudali.coursesapp.config;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import com.jfudali.coursesapp.user.model.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +26,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("role", userDetails.getAuthorities().stream().findFirst());
-        return generateToken(extraClaims, userDetails);
+        Optional<? extends GrantedAuthority> role =  user.getAuthorities().stream().findFirst();
+        role.ifPresent(grantedAuthority -> extraClaims.put("role", grantedAuthority.toString()));
+        extraClaims.put("userId", user.getIduser());
+        return generateToken(extraClaims, user);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)).signWith(key).compact();
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)).signWith(key).compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

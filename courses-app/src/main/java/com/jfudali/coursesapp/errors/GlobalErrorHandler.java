@@ -51,7 +51,12 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ApiError> getApiErrorResponse(HttpStatus status, Throwable throwable){
         String error = throwable.getMessage();
         ApiError apiError = new ApiError(status, throwable.getLocalizedMessage(), error);
+        System.out.println(apiError.getStatus());
         return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<ApiError> handleNotFoundException(NotFoundException ex) {
+        return getApiErrorResponse(HttpStatus.NOT_FOUND, ex);
     }
     @ExceptionHandler({ResponseStatusException.class})
     public ResponseEntity<ApiError> handleResponseStatusException(ResponseStatusException ex){
@@ -96,10 +101,7 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
 
 
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFoundException(Exception ex) {
-        return getApiErrorResponse(HttpStatus.NOT_FOUND, ex);
-    }
+
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex) {

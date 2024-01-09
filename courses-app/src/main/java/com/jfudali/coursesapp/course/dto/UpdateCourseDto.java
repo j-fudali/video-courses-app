@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Setter
 public class UpdateCourseDto {
     private String name;
+    private String description;
     @Max(message = "Name maximum length is 45 characters", value = 45)
     private BigDecimal cost;
     private Integer categoryId;

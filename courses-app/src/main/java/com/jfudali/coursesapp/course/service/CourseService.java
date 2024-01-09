@@ -31,6 +31,7 @@ public class CourseService {
                 Course course = Course.builder()
                                 .name(createCourseRequest.getName())
                                 .cost(createCourseRequest.getCost())
+                                .description(createCourseRequest.getDescription())
                                 .category(categoryRepository.findById(createCourseRequest.getCategoryId())
                                                 .orElseThrow(() -> new NotFoundException("Category not found")))
                                 .creator(userRepository.findByEmail(user)
