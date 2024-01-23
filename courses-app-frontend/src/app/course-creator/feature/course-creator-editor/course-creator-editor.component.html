@@ -1,0 +1,56 @@
+@if(isGtSm$ | async; as bp){
+<div class="container" [style.width]="!bp.matches ? '100%' : breakpointObs.isMatched(small) ? '80%' : '60%'">
+    <mat-accordion multi>
+        <mat-expansion-panel [expanded]="step === 0" (opened)="step = 0">
+            <mat-expansion-panel-header><mat-panel-title>
+                    Course Details
+                </mat-panel-title>
+                <mat-panel-description>Add important details about course</mat-panel-description>
+            </mat-expansion-panel-header>
+            <app-course-details-form [categories]="categories$ | async"
+                [courseDetailsGroup]="newCourseForm.controls.courseDetailsGroup"></app-course-details-form>
+            <mat-action-row>
+                <button mat-button (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+        <mat-expansion-panel [expanded]="step === 1">
+            <mat-expansion-panel-header><mat-panel-title>
+                    Add lessons
+                </mat-panel-title>
+                <mat-panel-description>Add lessons with titles, descriptions and videos</mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-accordion>
+                <div class="added-lessons">
+                    @for (lessonGroup of lessons.controls; track lessonGroup; let lessonIdx = $index) {
+                    <app-add-lesson [lessonId]="lessonGroup.get('idlesson')?.value" (onRemoveQuiz)="removeQuiz($event)"
+                        (onRemoveLesson)="removeLesson($event, lessonIdx)" (onAddAnswer)="addAnswer($event)"
+                        (onAddQuestion)="addQuestion($event)" (onAddQuiz)="addQuiz($event)" [lessonGroup]="lessonGroup"
+                        [isGtXs]="bp.matches"></app-add-lesson>
+                    }
+                </div>
+            </mat-accordion>
+            <mat-action-row class="add-lesson">
+                <button class=" add-lesson-button" mat-fab extended (click)="addLesson()"><mat-icon>add</mat-icon>Add
+                    lesson</button>
+
+            </mat-action-row>
+        </mat-expansion-panel>
+    </mat-accordion>
+    @if (!editedCourse) {
+    <button [disabled]="newCourseForm.invalid" (click)="createCourse()" class="create-course" color="primary" mat-fab
+        extended><mat-icon>done</mat-icon>Create
+        course</button>
+    }@else {
+    <button [disabled]="newCourseForm.invalid || !newCourseForm.dirty" (click)="saveChanges()" class="save-changes"
+        color="accent" mat-fab extended><mat-icon>done</mat-icon>Save changes</button>
+
+    }
+
+</div>
+}
+@if(loadingText){
+<div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <h2>{{loadingText}}</h2>
+</div>
+}

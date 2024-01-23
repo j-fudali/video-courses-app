@@ -1,6 +1,8 @@
 package com.jfudali.coursesapp.course.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.jfudali.coursesapp.course.dto.*;
 import jakarta.validation.Valid;
@@ -34,13 +36,16 @@ public class CourseController {
         private final ModelMapper modelMapper;
         @PreAuthorize("hasAuthority('ADMIN')")
         @PostMapping()
-        public ResponseEntity<CourseDto> createCourse(
+        public ResponseEntity<Map<String, Integer>> createCourse(
                         @RequestBody @Valid CreateCourseDto createCourseRequest,
                         Principal principal) throws NotFoundException {
-                CourseDto courseResponse = modelMapper.map(
-                                courseService.createCourse(createCourseRequest, principal.getName()),
-                                CourseDto.class);
-                return new ResponseEntity<>(courseResponse,
+                Integer courseId = courseService.createCourse(createCourseRequest,principal.getName()).getIdcourse();
+//                CourseDto courseResponse = modelMapper.map(
+//                                courseService.createCourse(createCourseRequest, principal.getName()),
+//                                CourseDto.class);
+                Map<String, Integer> response = new HashMap<>();
+                response.put("courseId", courseId);
+                return new ResponseEntity<>(response,
                                             HttpStatus.CREATED);
         }
 

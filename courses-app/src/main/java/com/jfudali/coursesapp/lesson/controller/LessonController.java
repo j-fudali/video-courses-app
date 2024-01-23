@@ -30,6 +30,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,15 +40,17 @@ import java.security.Principal;
 public class LessonController {
     private final LessonService lessonService;
     private final ModelMapper modelMapper;
-    private final CourseService courseService;
-    private final ObjectMapper objectMapper;
     @PostMapping()
-    public ResponseEntity<CreateLessonDto> createLesson(@PathVariable(name = "courseId") Integer courseId,
-            @RequestBody CreateLessonDto createLessonDto, Principal principal)
+    public ResponseEntity<Map<String, Integer>> createLesson(@PathVariable(name = "courseId") Integer courseId,
+                                            @RequestBody CreateLessonDto createLessonDto)
             throws NotFoundException, OwnershipException {
-        return new ResponseEntity<CreateLessonDto>(
-                modelMapper.map(lessonService.createLesson(courseId, createLessonDto), CreateLessonDto.class),
-                HttpStatus.OK);
+        Integer lessonId = lessonService.createLesson(courseId, createLessonDto).getIdlesson();
+        Map<String , Integer> response = new HashMap<>();
+        response.put("lessonId", lessonId);
+        return  new ResponseEntity<>(response, HttpStatus.OK);
+//        return new ResponseEntity<CreateLessonDto>(
+//                modelMapper.map(lessonService.createLesson(courseId, createLessonDto), CreateLessonDto.class),
+//                HttpStatus.OK);
     }
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonDto> getLessonById(@PathVariable("lessonId") Integer lessonId,

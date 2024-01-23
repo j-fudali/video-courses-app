@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -61,6 +58,8 @@ public class QuizService {
     public void deleteQuiz(Integer courseId, Integer lessonId) throws NotFoundException {
         Lesson lesson = lessonService.getLessonById(courseId, lessonId);
         if(lesson.getQuiz() == null) throw  new NotFoundException("Quiz not found");
+        Set<User> users = lesson.getQuiz().getExaminee();
+        users.forEach(u -> u.getQuizzes().remove(lesson.getQuiz()));
         lesson.setQuiz(null);
         lessonRepository.save(lesson);
     }

@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  margin: -10px 0;
+}
+.container {
+  min-height: 90vh;
+  display: flex;
+  width: 100%;
+  h2 {
+    text-align: center;
+  }
+}
+.basic-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  span {
+    line-height: 50px;
+    text-align: center;
+  }
+}
+p {
+  font-size: 16px;
+  margin: 20px;
+  span:last-child,
+  i {
+    font-weight: lighter;
+  }
+}
+.no-lessons {
+  text-align: center;
+  margin-top: 20px;
+}

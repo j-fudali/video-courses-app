@@ -12,6 +12,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "quiz")
@@ -35,7 +36,7 @@ public class Quiz {
     @OneToOne(mappedBy = "quiz")
     @JsonIgnore
     private Lesson lesson;
-    @ManyToMany(mappedBy = "quizzes")
+    @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "quizzes")
     @JsonIgnore
-    private List<User> examinee;
+    private Set<User> examinee;
 }

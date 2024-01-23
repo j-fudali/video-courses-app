@@ -1,0 +1,25 @@
+<div class="container">
+    <app-header [isAdmin]="isAdmin" [cart]="cart" [isGtSm]="isGtSm$ | async" [isLoggedIn]="isLoggedIn" [links]="links"
+        [title]="title" (onLogout)="logout()" (onRemoveFromCart)="removeFromCart($event)"
+        (onToggleSidenav)="toggleSidenav()"></app-header>
+    <mat-sidenav-container>
+        <mat-sidenav #sidenav class="sidenav" mode="over" (closed)="closeSidenav()" [opened]="sidenavOpened">
+            <mat-nav-list>
+                @for (link of links; track link) {
+                @if((link.isAdmin && isAdmin()) || !link.isAdmin){
+
+                <a mat-list-item (click)="sidenav.close()" [routerLink]="link.path"
+                    [activated]="link.isActive">{{link.name}}</a>
+                }
+
+                }
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content class="content">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+    <footer>
+        <span>&copy; Jakub Fudali</span>
+    </footer>
+</div>

@@ -1,0 +1,50 @@
+@if({isGtSm: isGtSm$ | async}; as bp){
+@if(data$ | async; as data){
+<div class="container" [style.flexDirection]="bp.isGtSm ? 'row' : 'column'">
+    <div class="basic-info" [style.width]="bp.isGtSm ? '30%' : '100%'"
+        [style.padding]="bp.isGtSm ? '0 20px' : '20px 0'">
+        <span [style.fontSize]="bp.isGtSm ? '36px' : '24px'">{{
+            data.course.name
+            }}</span>
+    </div>
+    <mat-divider vertical></mat-divider>
+
+    <mat-tab-group dynamicHeight [style.width]="bp.isGtSm ? '70%' : '100%'" [selectedIndex]="data.alreadyBought ? 1 : 0"
+        [animationDuration]="0">
+        <mat-tab label="Details">
+            <mat-divider></mat-divider>
+            <p>
+                <span>Creator:</span>
+                <span>
+                    {{ data.course.creator.firstname }}
+                    {{ data.course.creator.lastname }}
+                </span>
+            </p>
+            <mat-divider></mat-divider>
+            <p>
+                <span>Category: </span>
+                <i>{{data.course.category.name}}</i>
+            </p>
+            <mat-divider></mat-divider>
+            <p>
+                <span>Description: </span>
+                <span>
+                    {{ data.course.description }}
+                </span>
+            </p>
+        </mat-tab>
+        <mat-tab label="Lessons">
+            <mat-nav-list>
+                @for(lesson of data.course.lessons; track lesson.idlesson){
+                <app-lesson-list-item [lesson]="lesson"
+                    [disabled]="!(data.alreadyBought || data.course.creator.iduser == userId)"></app-lesson-list-item>
+                } @empty {
+                <h3 [style.fontSize]="bp.isGtSm ? '18px' : '16px'" class="no-lessons">
+                    No lessons added yet
+                </h3>
+                }
+            </mat-nav-list>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+} }

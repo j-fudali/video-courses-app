@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  margin-top: 10px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
+button {
+  margin-left: auto;
+}
+textarea {
+  resize: none;
+}
+.description {
+  height: 30vh;
+}

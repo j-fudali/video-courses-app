@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  display: flex;
+  flex-direction: column;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
+video {
+  width: 100%;
+}
+.upload-video {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 5px;
+  .video-wrapper {
+    video {
+      width: 100%;
+    }
+  }
+  input {
+    display: none;
+  }
+}
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}

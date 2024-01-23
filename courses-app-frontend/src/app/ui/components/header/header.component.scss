@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+mat-toolbar {
+  z-index: 2;
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  div:last-child {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    gap: 5px;
+  }
+}

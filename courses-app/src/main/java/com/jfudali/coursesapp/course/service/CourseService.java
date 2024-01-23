@@ -58,6 +58,12 @@ public class CourseService {
                                 () -> new NotFoundException("Course with provided id not found"));
                 if (updateCourseDto.getName() != null)
                         course.setName(updateCourseDto.getName());
+                if(updateCourseDto.getCost() != null){
+                        course.setCost(updateCourseDto.getCost());
+                }
+                if(updateCourseDto.getDescription() != null){
+                        course.setDescription(updateCourseDto.getDescription());
+                }
                 if (updateCourseDto.getCategoryId() != null)
                         course.setCategory(categoryRepository.findById(updateCourseDto.getCategoryId())
                                         .orElseThrow(() -> new NotFoundException("Category not found")));

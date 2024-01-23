@@ -1,0 +1,19 @@
+@if(breakpoints$ | async; as breakpoints){
+<div class="container" [style.width]="breakpoints.matches ? '60%' : '80%'">
+    <app-search-courses (searchEmit)="search($event)" (showAllEmit)="showAll()" [categories]="categories$ | async"
+        [initialSearchValue]="name || ''" [initialCategoryValue]="category || ''"
+        [showCategoryChip]="breakpoints.matches" />
+    <mat-divider></mat-divider>
+    <div #list class="courses-list" [style.gridTemplateColumns]="breakpoints.matches ? '1fr 1fr' : '1fr'" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" [scrollWindow]="false" (scrolled)="onScroll()">
+        <div class="top" #top></div>
+        @for(course of courses$ | async; track course.idcourse){
+        <app-course-card [shoppingCart]="shoppingCart" (onAddToCart)="addToCart($event)"
+            [isCreator]="course.creator.iduser == userId" [isLoggedIn]="isLoggedIn()" [course]="course"
+            [style.gridColumn]="breakpoints.matches ? 'auto' : '1/3'"></app-course-card>
+        } @empty {
+        <h2>No courses found</h2>
+        }
+    </div>
+</div>
+}

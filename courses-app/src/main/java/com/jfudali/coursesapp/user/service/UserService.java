@@ -24,7 +24,6 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     public User getUserByEmail(String email) throws NotFoundException {
-        System.out.println("To jest uruchamiane");
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
     }
 

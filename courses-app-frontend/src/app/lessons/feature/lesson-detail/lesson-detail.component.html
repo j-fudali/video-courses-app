@@ -1,0 +1,40 @@
+@if(lesson$ | async; as lesson){
+<div class="header">
+    <div>
+        <button [routerLink]="['../..']" mat-icon-button>
+            <mat-icon>arrow_backward</mat-icon>
+        </button>
+        <h2>{{ lesson.title }}</h2>
+        <div></div>
+    </div>
+</div>
+<mat-divider></mat-divider>
+@if(isGtSm$ | async; as isGtSm){
+<div class="content" [style.flexDirection]="isGtSm.matches ? 'row' : 'column'">
+    <div class="lesson-video" [style.width]="isGtSm.matches ? '60%' : '100%'">
+        <video (contextmenu)="(false)" controls [controlsList]="'nodownload'">
+            <source (error)="showVideoError()" [src]="videoUrl + lesson.video" />
+        </video>
+        @if(hasVideoError){
+        <div>
+            <h3>Unable to load video. Please try again later.</h3>
+        </div>
+        }
+    </div>
+    <mat-divider [vertical]="isGtSm.matches"></mat-divider>
+    <div class="lesson-description" [style.width]="isGtSm.matches ? '40%' : '100%'">
+        <h3>Description</h3>
+        <p>{{ lesson.description }}</p>
+    </div>
+</div>
+<mat-divider></mat-divider>
+<div class="quiz">
+    @if(lesson.quiz && lesson.quiz.questions.length > 0){
+    <app-quiz [completed]="(passedQuiz$ | async)?.completed" [style.width]="isGtSm.matches ? '60%' : '100%'"
+        [quiz]=" lesson.quiz" (resultsEmit)="verifyResults($event)"></app-quiz>
+    }@else {
+    <h3>No quiz to solve</h3>
+    }
+</div>
+}
+}

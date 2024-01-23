@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+h2 {
+  text-align: center;
+}
+mat-card {
+  margin-top: 10px;
+}
+mat-list-option {
+  height: auto !important;
+  p {
+    white-space: pre-wrap;
+  }
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.next {
+  margin-left: auto;
+}
+.previous {
+  margin-right: auto;
+}
+mat-card-footer {
+  p {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    span {
+      font-size: 18px;
+      font-weight: lighter;
+    }
+  }
+}

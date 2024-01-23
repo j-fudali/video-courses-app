@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  height: 90vh;
+}
+mat-stepper {
+  margin: 0 auto;
+}
+div {
+  margin-top: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  a {
+    align-self: center;
+  }
+  div {
+    display: flex;
+    flex-direction: row;
+  }
+  h3 {
+    width: 100%;
+    text-align: center;
+  }
+  mat-selection-list {
+    width: 100%;
+  }
+}
+.no-item {
+  text-align: center;
+}
+
+mat-spinner {
+  margin: 0 auto;
+}

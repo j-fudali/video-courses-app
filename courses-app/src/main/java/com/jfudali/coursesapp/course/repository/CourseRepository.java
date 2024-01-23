@@ -17,6 +17,5 @@ import java.util.Set;
 public interface CourseRepository
         extends JpaRepository<Course, Integer>,
         JpaSpecificationExecutor<Course> {
-
     Page<Course> findCoursesByCreatorEmail(String email, Pageable pageable);
 }

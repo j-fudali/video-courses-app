@@ -29,5 +29,5 @@ public class Question {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "question_idquestion", nullable = false)
     @JsonView(QuizView.Public.class)
-    private Set<Answer> answers;
+    private List<Answer> answers;
 }
