@@ -36,7 +36,7 @@ public class Quiz {
     @OneToOne(mappedBy = "quiz")
     @JsonIgnore
     private Lesson lesson;
-    @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "quizzes")
+    @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "passedQuizzes")
     @JsonIgnore
     private Set<User> examinee;
 }

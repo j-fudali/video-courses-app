@@ -1,8 +1,6 @@
 package com.jfudali.coursesapp.quiz.controller;
 
-import com.jfudali.coursesapp.dto.ResponseMessage;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
-import com.jfudali.coursesapp.exceptions.OwnershipException;
 import com.jfudali.coursesapp.quiz.dto.CreateQuizDto;
 import com.jfudali.coursesapp.quiz.dto.UpdateQuizDto;
 import com.jfudali.coursesapp.quiz.dto.UserCompletedQuizDto;

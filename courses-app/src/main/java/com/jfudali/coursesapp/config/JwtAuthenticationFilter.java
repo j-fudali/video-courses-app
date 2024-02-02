@@ -2,7 +2,6 @@ package com.jfudali.coursesapp.config;
 
 import java.io.IOException;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

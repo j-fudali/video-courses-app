@@ -3,7 +3,6 @@ package com.jfudali.coursesapp.file.controller;
 import java.io.IOException;
 
 import com.jfudali.coursesapp.exceptions.FileException;
-import jakarta.servlet.annotation.MultipartConfig;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

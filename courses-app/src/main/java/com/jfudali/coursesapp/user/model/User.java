@@ -1,11 +1,10 @@
 package com.jfudali.coursesapp.user.model;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.jfudali.coursesapp.answer.model.Answer;
+import com.jfudali.coursesapp.lesson.model.Lesson;
 import com.jfudali.coursesapp.ownership.model.Ownership;
 import com.jfudali.coursesapp.quiz.model.Quiz;
 import jakarta.persistence.*;
@@ -13,10 +12,8 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jfudali.coursesapp.course.model.Course;
 
 @Getter
 @Setter
@@ -42,8 +39,11 @@ public class User implements UserDetails {
     private Set<Ownership> ownerships;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "passed_lesson", joinColumns = @JoinColumn(name = "user_iduser", referencedColumnName = "iduser"), inverseJoinColumns = @JoinColumn(name = "lesson_idlesson", referencedColumnName = "idlesson"))
+    private List<Lesson> passedLessons;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(name = "passed_quiz", joinColumns = @JoinColumn(name = "user_iduser", referencedColumnName = "iduser"), inverseJoinColumns = @JoinColumn(name = "quiz_idquiz", referencedColumnName = "idquiz"))
-    private List<Quiz> quizzes;
+    private List<Quiz> passedQuizzes;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(type.name()));

@@ -11,7 +11,6 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 @Component
 public class CourseOwnerAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {

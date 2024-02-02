@@ -14,13 +14,12 @@ public class CourseQuerySpecification {
         };
     }
 
-    public static Specification<Course> withCategoryName(String categoryName) {
+    public static Specification<Course> withCategoryId(Integer categoryId) {
         return (root, query, criteriaBuilder) -> {
-            if (categoryName == null || categoryName.isEmpty()) {
+            if (categoryId == null) {
                 return criteriaBuilder.isTrue(criteriaBuilder.literal(true)); // True predicate to get all records
             }
-            return criteriaBuilder.equal(root.get("category").get("name"), categoryName);
+            return criteriaBuilder.equal(root.get("category").get("idcategory"), categoryId);
         };
     }
-
 }

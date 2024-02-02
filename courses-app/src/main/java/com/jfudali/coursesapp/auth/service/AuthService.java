@@ -27,6 +27,7 @@ AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user;
         user = User.builder()

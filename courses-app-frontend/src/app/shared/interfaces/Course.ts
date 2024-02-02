@@ -7,4 +7,5 @@ export interface Course {
   creator: Creator;
   cost: number;
   category: Category;
+  isBought?: boolean;
 }

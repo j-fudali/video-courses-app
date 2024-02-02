@@ -2,7 +2,6 @@ package com.jfudali.coursesapp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfudali.coursesapp.errors.ApiError;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

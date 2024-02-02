@@ -31,7 +31,7 @@
 <div class="quiz">
     @if(lesson.quiz && lesson.quiz.questions.length > 0){
     <app-quiz [completed]="(passedQuiz$ | async)?.completed" [style.width]="isGtSm.matches ? '60%' : '100%'"
-        [quiz]=" lesson.quiz" (resultsEmit)="verifyResults($event)"></app-quiz>
+        [quiz]="lesson.quiz" (resultsEmit)="verifyResults($event)"></app-quiz>
     }@else {
     <h3>No quiz to solve</h3>
     }

@@ -1,8 +1,7 @@
 package com.jfudali.coursesapp.errors;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
@@ -23,6 +22,6 @@ public class ApiError {
     public ApiError(HttpStatus status, String message, String error) {
         this.status = status;
         this.message = message;
-        this.errors = Arrays.asList(error);
+        this.errors = Collections.singletonList(error);
     }
 }

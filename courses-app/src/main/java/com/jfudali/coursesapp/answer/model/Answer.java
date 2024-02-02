@@ -1,15 +1,9 @@
 package com.jfudali.coursesapp.answer.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.jfudali.coursesapp.question.model.Question;
 import com.jfudali.coursesapp.quiz.view.QuizView;
-import com.jfudali.coursesapp.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Set;
 
 @Entity
 @Table(name = "answer")
@@ -32,7 +26,5 @@ public class Answer {
         return isCorrect;
     }
 
-    public void setIsCorrect(boolean correct) {
-        isCorrect = correct;
-    }
+
 }

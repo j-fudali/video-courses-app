@@ -53,17 +53,21 @@ import { MatIconModule } from '@angular/material/icon';
       <mat-card-actions class="actions">
         @if(isLoggedIn){
         <div
-          matTooltip="You are a creator of this course"
+          [matTooltip]="
+            course.isBought
+              ? 'You already bought this course'
+              : 'You are a creator of this course'
+          "
           matTooltipShowDelay="500"
-          [matTooltipDisabled]="!isCreator"
+          [matTooltipDisabled]="!(isCreator || course.isBought)"
         >
           <button
             (click)="addToShoppingCart()"
-            [disabled]="isCreator || inCart()"
+            [disabled]="isCreator || inCart() || course.isBought"
             mat-mini-fab
             color="primary"
           >
-            @if(inCart()){
+            @if(inCart() || course.isBought){
             <mat-icon>shopping_cart</mat-icon>
 
             }@else{

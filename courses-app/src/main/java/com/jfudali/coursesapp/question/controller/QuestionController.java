@@ -1,6 +1,5 @@
 package com.jfudali.coursesapp.question.controller;
 
-import com.jfudali.coursesapp.course.service.CourseService;
 import com.jfudali.coursesapp.dto.ResponseMessage;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
 import com.jfudali.coursesapp.question.dto.SetQuestionsDto;

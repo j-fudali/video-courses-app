@@ -1,14 +1,14 @@
 package com.jfudali.coursesapp.lesson.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.jfudali.coursesapp.course.model.Course;
 
 import com.jfudali.coursesapp.quiz.model.Quiz;
+import com.jfudali.coursesapp.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "lesson")
@@ -24,6 +24,8 @@ public class Lesson {
     private String title;
     private String description;
     private String video;
+    @ManyToMany(mappedBy = "passedLessons")
+    Set<User> usersPassedLesson;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "course_idcourse")

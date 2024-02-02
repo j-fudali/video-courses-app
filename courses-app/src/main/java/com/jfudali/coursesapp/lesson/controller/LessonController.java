@@ -1,8 +1,5 @@
 package com.jfudali.coursesapp.lesson.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfudali.coursesapp.course.service.CourseService;
 import com.jfudali.coursesapp.dto.ResponseMessage;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
@@ -12,20 +9,12 @@ import com.jfudali.coursesapp.lesson.dto.LessonDto;
 import com.jfudali.coursesapp.lesson.dto.UpdateLessonDto;
 import com.jfudali.coursesapp.lesson.model.Lesson;
 import com.jfudali.coursesapp.lesson.service.LessonService;
-import com.jfudali.coursesapp.quiz.dto.CreateQuizDto;
-import com.jfudali.coursesapp.quiz.dto.UpdateQuizDto;
-import com.jfudali.coursesapp.quiz.model.Quiz;
-import com.jfudali.coursesapp.quiz.service.QuizService;
-import com.jfudali.coursesapp.quiz.view.QuizView;
-import com.jfudali.coursesapp.user.model.User;
-import jakarta.validation.Valid;
+import com.jfudali.coursesapp.quiz.dto.QuizDto;
+import com.jfudali.coursesapp.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +29,8 @@ import java.util.Map;
 public class LessonController {
     private final LessonService lessonService;
     private final ModelMapper modelMapper;
+    private final UserService userService;
+    private final CourseService courseService;
     @PostMapping()
     public ResponseEntity<Map<String, Integer>> createLesson(@PathVariable(name = "courseId") Integer courseId,
                                             @RequestBody CreateLessonDto createLessonDto)
@@ -48,15 +39,21 @@ public class LessonController {
         Map<String , Integer> response = new HashMap<>();
         response.put("lessonId", lessonId);
         return  new ResponseEntity<>(response, HttpStatus.OK);
-//        return new ResponseEntity<CreateLessonDto>(
-//                modelMapper.map(lessonService.createLesson(courseId, createLessonDto), CreateLessonDto.class),
-//                HttpStatus.OK);
     }
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonDto> getLessonById(@PathVariable("lessonId") Integer lessonId,
                                                    @PathVariable("courseId") Integer courseId,
-                                                   Authentication authentication) throws NotFoundException {
-        LessonDto lessonDto = modelMapper.map(lessonService.getLessonById(courseId, lessonId), LessonDto.class);
+                                                   Principal principal) throws NotFoundException {
+        Lesson lesson = lessonService.getLessonById(courseId, lessonId);
+        this.lessonService.verifyUserCompleteLesson(courseId, lessonId,
+                                                    principal.getName());
+        this.courseService.verifyUserPassedCourse(courseId, principal.getName());
+        LessonDto lessonDto = modelMapper.map(lesson, LessonDto.class);
+        if(lesson.getQuiz() != null){
+        lessonDto.setQuiz(new QuizDto(lesson.getQuiz().getTitle(),
+                                      lesson.getQuiz().getQuestions(),
+                                      lesson.getQuiz().getExaminee().stream().anyMatch(user -> user.getEmail().equals(principal.getName()))));
+        }
         return new ResponseEntity<>(lessonDto, HttpStatus.OK);
     }
 

@@ -22,6 +22,11 @@ import { MatButtonModule } from '@angular/material/button';
       [disabled]="disabled"
       [routerLink]="!disabled ? ['lessons', lesson.idlesson] : null"
     >
+      @if(!isCreator){
+      <mat-icon matListItemIcon>
+        @if(lesson.isCompleted){ check_circle }@else{ check_circle_outline }
+      </mat-icon>
+      }
       <h3 matListItemTitle>
         {{ lesson.title }}
       </h3>
@@ -32,6 +37,7 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonListItemComponent {
+  @Input() isCreator: boolean;
   @Input() disabled: boolean;
   @Input({ required: true }) lesson: Lesson;
 }

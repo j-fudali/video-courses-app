@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDto {
+public class GetCourseById {
     private  String name;
     private BigDecimal cost;
     private String description;
@@ -21,4 +21,5 @@ public class CourseDto {
     private PublicUserDto creator;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<PublicLessonDto> lessons;
+
 }

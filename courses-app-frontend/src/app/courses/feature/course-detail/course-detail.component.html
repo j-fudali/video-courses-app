@@ -36,7 +36,7 @@
         <mat-tab label="Lessons">
             <mat-nav-list>
                 @for(lesson of data.course.lessons; track lesson.idlesson){
-                <app-lesson-list-item [lesson]="lesson"
+                <app-lesson-list-item [isCreator]="data.course.creator.iduser === userId" [lesson]="lesson"
                     [disabled]="!(data.alreadyBought || data.course.creator.iduser == userId)"></app-lesson-list-item>
                 } @empty {
                 <h3 [style.fontSize]="bp.isGtSm ? '18px' : '16px'" class="no-lessons">

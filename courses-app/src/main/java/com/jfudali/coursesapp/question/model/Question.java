@@ -1,17 +1,12 @@
 package com.jfudali.coursesapp.question.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.jfudali.coursesapp.answer.model.Answer;
-import com.jfudali.coursesapp.quiz.model.Quiz;
 import com.jfudali.coursesapp.quiz.view.QuizView;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "question")

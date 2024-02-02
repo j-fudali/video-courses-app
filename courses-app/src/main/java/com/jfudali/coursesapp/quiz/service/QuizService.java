@@ -1,22 +1,17 @@
 package com.jfudali.coursesapp.quiz.service;
 
 import com.jfudali.coursesapp.answer.model.Answer;
-import com.jfudali.coursesapp.course.model.Course;
+import com.jfudali.coursesapp.course.service.CourseService;
 import com.jfudali.coursesapp.exceptions.AlreadyExistsException;
 import com.jfudali.coursesapp.exceptions.NotFoundException;
-import com.jfudali.coursesapp.lesson.service.LessonService;
 import com.jfudali.coursesapp.lesson.model.Lesson;
 import com.jfudali.coursesapp.lesson.repository.LessonRepository;
-import com.jfudali.coursesapp.ownership.model.Ownership;
-import com.jfudali.coursesapp.ownership.model.OwnershipKey;
-import com.jfudali.coursesapp.ownership.repository.OwnershipRepository;
-import com.jfudali.coursesapp.ownership.service.OwnershipService;
+import com.jfudali.coursesapp.lesson.service.LessonService;
 import com.jfudali.coursesapp.quiz.dto.CreateQuizDto;
 import com.jfudali.coursesapp.quiz.dto.UpdateQuizDto;
 import com.jfudali.coursesapp.quiz.dto.UserCompletedQuizDto;
 import com.jfudali.coursesapp.quiz.dto.UserQuestionAnswerDto;
 import com.jfudali.coursesapp.quiz.model.Quiz;
-import com.jfudali.coursesapp.quiz.repository.QuizRepository;
 import com.jfudali.coursesapp.user.model.User;
 import com.jfudali.coursesapp.user.repository.UserRepository;
 import com.jfudali.coursesapp.user.service.UserService;
@@ -26,9 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +34,8 @@ public class QuizService {
     private final LessonRepository lessonRepository;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final OwnershipRepository ownershipRepository;
+    private final CourseService courseService;
+    @Transactional
     public Quiz createQuiz(Integer courseId, Integer lessonId, CreateQuizDto createQuizDto) throws NotFoundException {
         Lesson lesson = lessonService.getLessonById(courseId, lessonId);
         if(lesson.getQuiz() != null) throw new AlreadyExistsException("Lesson already has a quiz");
@@ -48,6 +46,7 @@ public class QuizService {
         lessonRepository.save(lesson);
         return quiz;
     }
+    @Transactional
     public Quiz updateQuiz(Integer courseId, Integer lessonId, UpdateQuizDto updateQuizDto) throws NotFoundException {
         Lesson lesson = lessonService.getLessonById(courseId, lessonId);
         if(lesson.getQuiz() == null) throw new NotFoundException("Quiz not found");
@@ -55,11 +54,12 @@ public class QuizService {
         lessonRepository.save(lesson);
         return lesson.getQuiz();
     }
+    @Transactional
     public void deleteQuiz(Integer courseId, Integer lessonId) throws NotFoundException {
         Lesson lesson = lessonService.getLessonById(courseId, lessonId);
         if(lesson.getQuiz() == null) throw  new NotFoundException("Quiz not found");
         Set<User> users = lesson.getQuiz().getExaminee();
-        users.forEach(u -> u.getQuizzes().remove(lesson.getQuiz()));
+        users.forEach(u -> u.getPassedQuizzes().remove(lesson.getQuiz()));
         lesson.setQuiz(null);
         lessonRepository.save(lesson);
     }
@@ -71,8 +71,8 @@ public class QuizService {
         User user = userService.getUserByEmail(userEmail);
         Quiz quiz = lesson.getQuiz();
         if(quiz == null) throw  new NotFoundException("Quiz not found");
+        if(user.getPassedQuizzes().contains(quiz)) throw new AlreadyExistsException("You already passed this quiz");
         if(quiz.getQuestions().isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There are no questions in this course to give answer on");
-        if(user.getQuizzes().contains(quiz)) throw new AlreadyExistsException("You already passed this quiz");
         AtomicInteger correctAnswersCounter = new AtomicInteger();
         quiz.getQuestions().forEach(question -> {
             List<Integer> correctAnswers = question.getAnswers().stream().filter(Answer::getIsCorrect).map(Answer::getIdanswer).toList();
@@ -86,15 +86,12 @@ public class QuizService {
         });
         boolean correct = quiz.getQuestions().size() == correctAnswersCounter.get();
         if(correct){
-            user.getQuizzes().add(quiz);
+            user.getPassedQuizzes().add(quiz);
+            user.getPassedLessons().add(lesson);
+            lesson.getUsersPassedLesson().add(user);
+            lessonRepository.save(lesson);
             userRepository.save(user);
-            int courseLessonsNumber = lesson.getCourse().getLessons().stream().filter(lesson1 -> lesson1.getQuiz() != null).toList().size();
-            int userPassedQuizzesOfCourse = user.getQuizzes().stream().filter(passedQuiz -> Objects.equals(passedQuiz.getLesson().getCourse().getIdcourse(), courseId)).toList().size();
-            if(courseLessonsNumber == userPassedQuizzesOfCourse){
-                Ownership ownership = ownershipRepository.findById(new OwnershipKey(courseId, user.getIduser())).orElseThrow(() -> new NotFoundException("User owned course with provided course id not found"));
-                ownership.setIsCompleted(true);
-                ownershipRepository.save(ownership);
-            }
+            this.courseService.verifyUserPassedCourse(courseId, userEmail);
         }
         return correct;
     }

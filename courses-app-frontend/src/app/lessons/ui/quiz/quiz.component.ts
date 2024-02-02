@@ -96,7 +96,7 @@ import { MatIconModule } from '@angular/material/icon';
             }
           </mat-vertical-stepper>
           <button
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || completed || quiz.isPassed"
             type="submit"
             mat-raised-button
             color="primary"
@@ -105,16 +105,16 @@ import { MatIconModule } from '@angular/material/icon';
           </button>
         </form>
       </mat-card-content>
-      @if(completed != undefined){
+      @if(completed != undefined || quiz.isPassed){
       <mat-card-footer>
         <p>
-          @if(completed === true){
+          @if((completed || quiz.isPassed) === true){
           <mat-icon>check_circle</mat-icon>
           } @else {
           <mat-icon>check_circle_outline</mat-icon>
           }
-          <span [style.color]="completed ? 'green' : 'red'">{{
-            completed
+          <span [style.color]="completed || quiz.isPassed ? 'green' : 'red'">{{
+            completed || quiz.isPassed
               ? 'Congrats! You passed the quiz!'
               : 'Quiz is not completed, please try again'
           }}</span>

@@ -8,7 +8,6 @@ import com.jfudali.coursesapp.lesson.model.Lesson;
 import com.jfudali.coursesapp.ownership.model.Ownership;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.jfudali.coursesapp.category.model.Category;
 import com.jfudali.coursesapp.user.model.User;

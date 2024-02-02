@@ -1,16 +1,14 @@
 package com.jfudali.coursesapp.course.dto;
 
-import java.math.BigDecimal;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.jfudali.coursesapp.category.model.Category;
 import com.jfudali.coursesapp.user.dto.PublicUserDto;
-
-import lombok.AllArgsConstructor;
+import com.jfudali.coursesapp.user.model.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class GetAllCoursesDto {
     private Integer idcourse;
@@ -19,4 +17,19 @@ public class GetAllCoursesDto {
     private BigDecimal cost;
     private Category category;
     private PublicUserDto creator;
+    @JsonInclude(value = JsonInclude.Include.NON_NULL)
+    private Boolean isBought;
+
+    public GetAllCoursesDto(Integer idcourse, String name, String description, BigDecimal cost, Category category,
+                            User creator, boolean isBought) {
+        this.idcourse = idcourse;
+        this.name = name;
+        this.description = description;
+        this.cost = cost;
+        this.category = category;
+        this.creator = new PublicUserDto(creator.getIduser(),creator.getFirstname(), creator.getLastname());
+        this.isBought = isBought;
+    }
+
+
 }

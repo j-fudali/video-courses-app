@@ -24,17 +24,15 @@ import { minimumOneAnswerCorrect } from '../../util/minOneAnswerCorrect.validato
 import { NewCourse } from '../../../shared/interfaces/NewCourse';
 import { NewLesson } from '../../../shared/interfaces/NewLesson';
 import { CourseCreatorService } from '../../data-access/course-creator.service';
-import { catchError, forkJoin, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, forkJoin, of, switchMap, throwError } from 'rxjs';
 import { QuestionToSet } from '../../../shared/interfaces/QuestionToSet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CourseWithLessons } from '../../../shared/interfaces/CourseWithLessons';
 import { Category } from '../../../shared/interfaces/Category';
 import { Lesson } from '../../../shared/interfaces/Lesson';
 import { LessonDetail } from '../../../shared/interfaces/LessonDetail';
 import { Quiz } from '../../../shared/interfaces/Quiz';
-import { NewQuiz } from '../../../shared/interfaces/NewQuiz';
 import { Question } from '../../../shared/interfaces/Question';
 import { Answer } from '../../../shared/interfaces/Answer';
 import { UpdateCourse } from '../../../shared/interfaces/UpdateCourse';
@@ -65,7 +63,6 @@ export class EditorComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
-  private cdr = inject(ChangeDetectorRef);
   private snackbar = inject(MatSnackBar);
   breakpointObs = inject(BreakpointObserver);
   small = Breakpoints.Small;
@@ -119,7 +116,6 @@ export class EditorComponent implements OnInit {
             }
           }
         );
-        this.cdr.detectChanges();
       }
     }
   }
