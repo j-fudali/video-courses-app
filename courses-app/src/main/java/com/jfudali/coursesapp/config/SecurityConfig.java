@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfudali.coursesapp.errors.ApiError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.security.authorization.AuthenticatedAuthorizationManager.authenticated;
 import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority;
@@ -39,7 +42,7 @@ public class SecurityConfig {
         private final ExceptionHandlerFilter exceptionHandlerFilter;
         @Qualifier("delegatedAuthenticationEntryPoint")
         private final AuthenticationEntryPoint authenticationEntryPoint;
-
+        private final Environment environment;
 
 
         @Bean
@@ -53,7 +56,10 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(
                                                 (authorizeHttpRequests) -> {
                                                     authorizeHttpRequests
-                                                            .requestMatchers("/auth/**", "/error", "/categories")
+                                                            .requestMatchers(
+
+                                                                    "/auth" +
+                                                                            "/**", "/reset-password/**", "/error", "/categories")
                                                             .permitAll()
                                                             .requestMatchers(HttpMethod.GET, "/courses", "/courses/{courseId}")
                                                             .permitAll()
@@ -96,7 +102,8 @@ public class SecurityConfig {
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration cors = new CorsConfiguration();
                 cors.setAllowedOrigins(
-                        List.of("http://localhost:4200"));
+                        List.of(Objects.requireNonNull(environment.getProperty(
+                                "DOMAIN"))));
                 cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 cors.setAllowedHeaders(List.of("*"));
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

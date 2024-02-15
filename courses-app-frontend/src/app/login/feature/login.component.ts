@@ -13,7 +13,8 @@ import { AuthService } from '../../shared/data-access/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { jwtDecode } from 'jwt-decode';
 import { JwtToken } from '../../shared/interfaces/JwtToken';
-import { catchError, throwError } from 'rxjs';
+import { catchError, map, throwError } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -28,12 +29,12 @@ import { catchError, throwError } from 'rxjs';
     RouterModule,
   ],
   template: `
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Login</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <mat-card [style.width]="(isXs$ | async) ? '90%' : '45%'">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <mat-card-header>
+          <mat-card-title>Login</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
           <mat-form-field>
             <mat-label>E-mail</mat-label>
             <input
@@ -60,6 +61,8 @@ import { catchError, throwError } from 'rxjs';
             <mat-error>{{ getPasswordError() }}</mat-error>
             }
           </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
           <button
             type="submit"
             [disabled]="loginForm.invalid"
@@ -68,16 +71,15 @@ import { catchError, throwError } from 'rxjs';
           >
             Login
           </button>
-        </form>
-      </mat-card-content>
-      <mat-card-actions>
-        <a mat-button [routerLink]="['/sign-up']">Create account</a>
-      </mat-card-actions>
-      <mat-card-footer>
-        @if(showLoader){
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        }
-      </mat-card-footer>
+          <a mat-stroked-button routerLink="/reset-password">Reset password</a>
+          <a mat-button [routerLink]="['/sign-up']">Create account</a>
+        </mat-card-actions>
+        <mat-card-footer>
+          @if(showLoader){
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+        </mat-card-footer>
+      </form>
     </mat-card>
   `,
   styleUrl: './login.component.scss',
@@ -88,6 +90,10 @@ export class LoginComponent {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private breakpointObs = inject(BreakpointObserver);
+  isXs$ = this.breakpointObs
+    .observe([Breakpoints.XSmall])
+    .pipe(map((v) => v.matches));
   showLoader = false;
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],

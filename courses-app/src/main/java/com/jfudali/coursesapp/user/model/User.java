@@ -44,6 +44,7 @@ public class User implements UserDetails {
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(name = "passed_quiz", joinColumns = @JoinColumn(name = "user_iduser", referencedColumnName = "iduser"), inverseJoinColumns = @JoinColumn(name = "quiz_idquiz", referencedColumnName = "idquiz"))
     private List<Quiz> passedQuizzes;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(type.name()));

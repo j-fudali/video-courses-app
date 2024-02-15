@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @Builder
@@ -17,11 +18,14 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
     @NotBlank(message = "Empty firstname")
     @NotNull(message = "Firstname is null")
-    @Size(min = 5, max = 70, message = "Invalid firstname: Must be of 3 - 30 characters")
+    @Length(max = 70, message = "First name must include max. 70 characters" +
+            "characters")
     private String firstname;
     @NotBlank(message = "Empty lastname")
     @NotNull(message = "Lastname is null")
-    @Size(min = 5, max = 70, message = "Invalid lastname: Must be of 3 - 30 characters")
+    @Length(max = 100, message = "Last name must include max. 100 characters" +
+            " " +
+            "characters")
     private String lastname;
     @NotBlank(message = "Empty email")
     @NotNull(message = "Email is null")

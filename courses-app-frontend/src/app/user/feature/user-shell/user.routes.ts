@@ -8,4 +8,18 @@ export default [
         (c) => c.MyCoursesComponent
       ),
   },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('../user-profile/user-profile.component').then(
+        (c) => c.UserProfileComponent
+      ),
+  },
+  {
+    path: 'change-password',
+    loadComponent: () =>
+      import('../user-change-password/user-change-password.component').then(
+        (c) => c.UserChangePasswordComponent
+      ),
+  },
 ] as Route[];

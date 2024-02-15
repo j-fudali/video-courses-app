@@ -23,7 +23,8 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<UploadFileResponse> uploadFile(@RequestPart(value = "video") MultipartFile video)
             throws IOException, FileException {
-        return new ResponseEntity<UploadFileResponse>(new UploadFileResponse(this.fileService.uploadFile(video)),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new UploadFileResponse(this.fileService.uploadFile(
+                video)),
+                                    HttpStatus.OK);
     }
 }

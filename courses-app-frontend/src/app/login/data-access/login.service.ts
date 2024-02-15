@@ -8,10 +8,16 @@ import { LoginCredentials } from '../../shared/interfaces/LoginCredentials';
   providedIn: 'root',
 })
 export class LoginService {
-  private url = environment.url + '/auth/login';
+  private url = environment.url + '/auth/';
   private http = inject(HttpClient);
 
   login(loginCredentials: LoginCredentials): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(this.url, loginCredentials);
+    return this.http.post<{ token: string }>(
+      this.url + 'login',
+      loginCredentials
+    );
+  }
+  resetPassword(email: string) {
+    return this.http.post(this.url + 'reset-password', { email });
   }
 }

@@ -7,6 +7,7 @@ import com.jfudali.coursesapp.quiz.dto.UserCompletedQuizDto;
 import com.jfudali.coursesapp.quiz.dto.VerifyQuizDto;
 import com.jfudali.coursesapp.quiz.model.Quiz;
 import com.jfudali.coursesapp.quiz.service.QuizService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,14 @@ public class QuizController {
     @PostMapping()
     public ResponseEntity<Quiz> createQuiz(@PathVariable("courseId") Integer courseId,
                                            @PathVariable("lessonId") Integer lessonId,
-                                           @RequestBody CreateQuizDto createQuizDto
+                                           @Valid  @RequestBody CreateQuizDto createQuizDto
                                            ) throws NotFoundException {
         return  new ResponseEntity<>(quizService.createQuiz(courseId, lessonId, createQuizDto), HttpStatus.OK);
     }
     @PatchMapping
     public ResponseEntity<Quiz> updateQuiz(@PathVariable("courseId") Integer courseId,
                                            @PathVariable("lessonId") Integer lessonId,
-                                           @RequestBody UpdateQuizDto updateQuizDto
+                                           @Valid @RequestBody UpdateQuizDto updateQuizDto
                                            ) throws NotFoundException  {
         return new ResponseEntity<>(quizService.updateQuiz(courseId, lessonId, updateQuizDto), HttpStatus.OK);
     }
@@ -41,7 +42,7 @@ public class QuizController {
         quizService.deleteQuiz(courseId,lessonId);
     }
     @PostMapping("/verify")
-    public ResponseEntity<VerifyQuizDto> verifyUserAnswers(@RequestBody UserCompletedQuizDto userCompletedQuizDto,
+    public ResponseEntity<VerifyQuizDto> verifyUserAnswers(@Valid @RequestBody UserCompletedQuizDto userCompletedQuizDto,
                                                            @PathVariable Integer courseId,
                                                            @PathVariable Integer lessonId,
                                                            Principal principal){

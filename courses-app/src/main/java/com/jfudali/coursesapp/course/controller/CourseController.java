@@ -33,7 +33,7 @@ public class CourseController {
         @PreAuthorize("hasAuthority('ADMIN')")
         @PostMapping()
         public ResponseEntity<Map<String, Integer>> createCourse(
-                        @RequestBody @Valid CreateCourseDto createCourseRequest,
+                @Valid @RequestBody CreateCourseDto createCourseRequest,
                         Principal principal) throws NotFoundException {
                 Integer courseId = courseService.createCourse(createCourseRequest,principal.getName()).getIdcourse();
                 Map<String, Integer> response = new HashMap<>();
@@ -44,11 +44,11 @@ public class CourseController {
 
         @GetMapping()
         public ResponseEntity<Page<GetAllCoursesDto>> getAllCourses(@RequestParam(required = false) String name,
-                                                                    @RequestParam(required = false) Integer categoryId, Pageable pageable, Principal principal) {
+                                                                    @RequestParam(required = false) String category, Pageable pageable, Principal principal) {
                 if(principal != null){
-                        return new ResponseEntity<>(courseService.getAllCourses(name, categoryId, principal.getName(), pageable),HttpStatus.OK);
+                        return new ResponseEntity<>(courseService.getAllCourses(name, category, principal.getName(), pageable),HttpStatus.OK);
                 }
-                return  new ResponseEntity<>(courseService.getAllCourses(name, categoryId, pageable).map(course ->
+                return  new ResponseEntity<>(courseService.getAllCourses(name, category, pageable).map(course ->
                          modelMapper.map(course, GetAllCoursesDto.class)
                 ), HttpStatus.OK);
         }
@@ -57,6 +57,7 @@ public class CourseController {
                 Course course = courseService.getCourseById(id);
                 GetCourseById result =
                         modelMapper.map(course, GetCourseById.class);
+                result.setIsBought(false);
                 if(principal != null && course.getOwnerships().stream().anyMatch(ownership -> ownership.getUser().getEmail().equals(principal.getName()))){
                        List<PublicLessonDto> lessonDtos =
                                course.getLessons().stream().map(lesson -> new PublicLessonDto(
@@ -65,15 +66,18 @@ public class CourseController {
                                        lesson.getDescription(),
                                        lesson.getUsersPassedLesson().stream().anyMatch(user -> user.getEmail().equals(principal.getName())))).toList();
                        result.setLessons(lessonDtos);
+                       result.setIsBought(true);
                 }
-
+                if(principal==null){
+                        result.setIsBought(null);
+                }
                 return new ResponseEntity<>(result,
                                             HttpStatus.OK);
         }
 
         @PatchMapping(value = "/{id}")
         public ResponseEntity<GetCourseById> updateCourse(@PathVariable String id,
-                                                          @RequestBody @Valid UpdateCourseDto updateCourseDto, Principal principal)
+                                                          @Valid @RequestBody UpdateCourseDto updateCourseDto, Principal principal)
                         throws NumberFormatException, NotFoundException, OwnershipException {
                 Course updatedCourse = courseService.updateCourse(Integer.valueOf(id), updateCourseDto,
                                                                   principal.getName());
@@ -84,15 +88,5 @@ public class CourseController {
                                 courseResponse,
                                 HttpStatus.OK);
         }
-        //TODO
-        // Consider this ability for courses creators, think about ability to close for sale f.e
-//        @PreAuthorize("hasAuthority('ADMIN')")
-//        @DeleteMapping(value = "/{id}")
-//        public ResponseEntity<ResponseMessage> deleteCourse(@PathVariable @NumberFormat Integer id, Principal principal)
-//                        throws NumberFormatException, NotFoundException, OwnershipException {
-//                return new ResponseEntity<>(courseService.deleteCourse(id, principal.getName()), HttpStatus.OK);
-//        }
-
-
 
 }

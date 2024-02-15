@@ -66,14 +66,14 @@ export class SearchCoursesComponent implements OnInit {
   search() {
     const name = this.searchName.value;
     const category = this.category.value;
-    if (name && name != '') {
+    if (name && name != undefined && name != '') {
       if (category && category.length > 0) {
         this.searchEmit.emit({ name, category: category[0] });
       } else {
         this.searchEmit.emit({ name });
       }
     } else {
-      if (category && category.length > 0)
+      if (category && category[0] != undefined)
         this.searchEmit.emit({ category: category[0] });
     }
   }

@@ -7,31 +7,11 @@ import { AuthService } from '../../../shared/data-access/auth.service';
 import { CoursesService } from '../../data-access/courses.service';
 import { authGuard } from '../../../shared/guards/auth.guard';
 
-export const resolveCourseDetails: ResolveFn<{
-  alreadyBought: boolean;
-  course: CourseDetail;
-}> = (route: ActivatedRouteSnapshot) => {
-  const userService = inject(UserService);
+export const resolveCourseDetails: ResolveFn<CourseDetail> = (
+  route: ActivatedRouteSnapshot
+) => {
   const coursesService = inject(CoursesService);
-  const userLoggedIn = inject(AuthService).$isLoggedIn;
-  return combineLatest([
-    userLoggedIn()
-      ? userService
-          .checkUserAlreadyBoughtCourse(Number(route.paramMap.get('courseId')))
-          .pipe(
-            map(() => true),
-            catchError(() => of(false))
-          )
-      : of(false),
-    coursesService.getCourse(Number(route.paramMap.get('courseId'))),
-  ]).pipe(
-    map(([alreadyBought, courseDetail]) => {
-      return {
-        alreadyBought,
-        course: courseDetail,
-      };
-    })
-  );
+  return coursesService.getCourse(+route.paramMap.get('courseId')!);
 };
 
 export default [
@@ -55,7 +35,7 @@ export default [
   {
     path: ':courseId/lessons/:lessonId',
     loadChildren: () =>
-      import('../../../lessons/feature/lesson-shell/lesson-shell.routes'),
+      import('../../../lessons/feature/lesson-shell/lesson.routes'),
     canActivate: [authGuard],
   },
 ] as Route[];

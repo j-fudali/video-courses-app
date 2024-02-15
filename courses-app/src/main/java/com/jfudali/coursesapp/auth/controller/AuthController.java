@@ -1,17 +1,16 @@
 package com.jfudali.coursesapp.auth.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import com.jfudali.coursesapp.auth.dto.AuthenticationResponse;
-import com.jfudali.coursesapp.auth.dto.LoginRequest;
-import com.jfudali.coursesapp.auth.dto.RegisterRequest;
+import com.jfudali.coursesapp.auth.dto.*;
+import com.jfudali.coursesapp.dto.ResponseMessage;
+import com.jfudali.coursesapp.resetpassword.dto.ResetPasswordConfirmDto;
+import com.jfudali.coursesapp.resetpassword.dto.ResetPasswordDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import com.jfudali.coursesapp.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * AuthController
@@ -23,13 +22,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest registerRequestDto) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest registerRequestDto) {
         return ResponseEntity.ok(authService.register(registerRequestDto));
 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid LoginRequest loginRequestDto) {
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest loginRequestDto) {
         return ResponseEntity.ok(authService.login(loginRequestDto));
     }
 

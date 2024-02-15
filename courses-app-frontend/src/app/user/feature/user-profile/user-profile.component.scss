@@ -1,9 +1,27 @@
 :host {
   display: block;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-button {
-  margin: auto 5px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+mat-card {
+  width: 50%;
+  padding: 10px;
+}
+mat-card-content {
+  display: flex;
+  flex-direction: column;
+}
+mat-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+}
+.successful-update {
+  text-align: center;
+  font-size: 18px;
+  color: green;
 }

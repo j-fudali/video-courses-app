@@ -10,7 +10,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { passwordsMatchValidator } from '../util/passwordValidator';
 import { MatButtonModule } from '@angular/material/button';
 import { SignUpService } from '../data-access/sign-up.service';
 import { SignUpCredentials } from '../../shared/interfaces/SignUpCredentials';
@@ -19,6 +18,8 @@ import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { catchError, map, throwError } from 'rxjs';
+import { confirmPasswordValidator } from '../../shared/util/passwordValidator';
+import { DirtyTouchedErrorStateMatcher } from '../../shared/util/DirtyTouchedErrorStateMatcher';
 
 @Component({
   selector: 'app-sign-up',
@@ -44,14 +45,19 @@ import { catchError, map, throwError } from 'rxjs';
             <mat-label>First name</mat-label>
             <input type="text" matInput formControlName="firstname" />
             @if(firstname.hasError('required')){
-            <mat-error>Firstname is required</mat-error>
+            <mat-error>First name is required</mat-error>
+            }@else{
+            <mat-error>First name length is max. 70 characters</mat-error>
             }
           </mat-form-field>
           <mat-form-field>
             <mat-label>Last name</mat-label>
             <input type="text" matInput formControlName="lastname" />
             @if(lastname.hasError('required')){
-            <mat-error>Lastname is required</mat-error>
+            <mat-error>Last name is required</mat-error>
+            } @else{
+            <mat-error>Last name length is max. 100 characters</mat-error>
+
             }
           </mat-form-field>
           <mat-form-field>
@@ -75,12 +81,17 @@ import { catchError, map, throwError } from 'rxjs';
           </mat-form-field>
           <mat-form-field>
             <mat-label>Repeat password</mat-label>
-            <input type="password" matInput formControlName="rePassword" />
-            <mat-error>
-              @if(rePassword.invalid){ @if(password.touched &&
-              rePassword.touched &&rePassword.hasError('notSame')){ Passwords
-              not match } @else{ You have to repeat password } }
-            </mat-error>
+            <input
+              type="password"
+              matInput
+              formControlName="rePassword"
+              [errorStateMatcher]="matcher"
+            />
+            @if(signUpForm.invalid){<mat-error>
+              @if(signUpForm.hasError('notSame')){ Passwords not match }
+              @if(rePassword.hasError('required') &&
+              !signUpForm.hasError('notSame')){ You have to repeat password } </mat-error
+            >}
           </mat-form-field>
           <button
             mat-raised-button
@@ -111,25 +122,29 @@ export class SignUpComponent {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private breakpointObs = inject(BreakpointObserver);
+  matcher = new DirtyTouchedErrorStateMatcher();
   isGtSm$ = this.breakpointObs
     .observe([Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
     .pipe(map((bp) => bp.matches));
   showLoading = false;
-  signUpForm = this.fb.group({
-    firstname: ['', Validators.required],
-    lastname: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    password: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern(
-          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-        ),
+  signUpForm = this.fb.nonNullable.group(
+    {
+      firstname: ['', [Validators.required, Validators.maxLength(70)]],
+      lastname: ['', [Validators.required, Validators.maxLength(100)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+          ),
+        ],
       ],
-    ],
-    rePassword: ['', [Validators.required, passwordsMatchValidator()]],
-  });
+      rePassword: ['', [Validators.required]],
+    },
+    { validators: confirmPasswordValidator('password', 'rePassword') }
+  );
 
   get firstname() {
     return this.signUpForm.get('firstname')!;

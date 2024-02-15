@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 import { Course } from '../../../shared/interfaces/Course';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIconModule } from '@angular/material/icon';
+import { ShoppingCartButtonComponent } from '../shopping-cart-button/shopping-cart-button.component';
 
 @Component({
   selector: 'app-course-card',
@@ -27,7 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
     RouterModule,
     MatChipsModule,
     MatTooltipModule,
-    MatIconModule,
+    ShoppingCartButtonComponent,
   ],
   template: `
     <mat-card>
@@ -61,19 +61,11 @@ import { MatIconModule } from '@angular/material/icon';
           matTooltipShowDelay="500"
           [matTooltipDisabled]="!(isCreator || course.isBought)"
         >
-          <button
-            (click)="addToShoppingCart()"
-            [disabled]="isCreator || inCart() || course.isBought"
-            mat-mini-fab
-            color="primary"
-          >
-            @if(inCart() || course.isBought){
-            <mat-icon>shopping_cart</mat-icon>
-
-            }@else{
-            <mat-icon>add_shopping_cart</mat-icon>
-            }
-          </button>
+          <app-shopping-cart-button
+            [disabled]="isCreator || inCart() || course.isBought ? true : false"
+            [isAvailable]="inCart() || course.isBought ? true : false"
+            (onAddToShoppingCart)="addToShoppingCart()"
+          ></app-shopping-cart-button>
         </div>
         }
         <a [routerLink]="['/courses', course.idcourse]" mat-stroked-button
@@ -91,8 +83,10 @@ export class CourseCardComponent {
   @Input({ required: true }) isCreator: boolean;
   @Input({ required: true }) shoppingCart: Signal<Course[]>;
   @Output() onAddToCart = new EventEmitter<Course>();
-  inCart = computed(() =>
-    this.shoppingCart().find((c) => c.idcourse === this.course.idcourse)
+  inCart = computed(
+    () =>
+      this.shoppingCart().filter((c) => c.idcourse == this.course.idcourse)
+        .length > 0
   );
   addToShoppingCart() {
     this.onAddToCart.emit(this.course);

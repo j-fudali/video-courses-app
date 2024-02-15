@@ -8,5 +8,6 @@ export interface CourseDetail {
   creator: Creator;
   cost: number;
   category: Category;
+  isBought?: boolean;
   lessons: Lesson[];
 }

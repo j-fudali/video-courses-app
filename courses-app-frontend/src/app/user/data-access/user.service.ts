@@ -5,13 +5,35 @@ import { environment } from '../../../environments/environment.development';
 import { Pagination } from '../../shared/interfaces/Pagination';
 import { PaginationRequest } from '../../shared/interfaces/PaginationRequest';
 import { UserCourse } from '../../shared/interfaces/UserCourse';
+import { UserProfile } from '../../shared/interfaces/UserProfile';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private http = inject(HttpClient);
-  private baseUrl = environment.url + '/users/me/courses';
+  private baseUrl = environment.url + '/users/me';
+
+  getUserProfile() {
+    return this.http.get<UserProfile>(this.baseUrl);
+  }
+  changePassword(newPassword: string) {
+    return this.http.post<{ message: string }>(
+      this.baseUrl + '/change-password',
+      { newPassword }
+    );
+  }
+  resetPassword() {}
+  updateUserProfle(firstname: string | null, lastname: string | null) {
+    if (!firstname)
+      return this.http.patch<{ message: string }>(this.baseUrl, { lastname });
+    if (!lastname)
+      return this.http.patch<{ message: string }>(this.baseUrl, { firstname });
+    return this.http.patch<{ message: string }>(this.baseUrl, {
+      firstname,
+      lastname,
+    });
+  }
   getCourses(
     type: string,
     paginationRequest?: PaginationRequest
@@ -23,9 +45,13 @@ export class UserService {
       if (paginationRequest.size)
         params = params.set('size', paginationRequest.size);
     }
-    return this.http.get<Pagination<UserCourse>>(this.baseUrl, { params });
+    return this.http.get<Pagination<UserCourse>>(this.baseUrl + '/courses', {
+      params,
+    });
   }
   checkUserAlreadyBoughtCourse(courseId: number) {
-    return this.http.get<{ message: string }>(this.baseUrl + '/' + courseId);
+    return this.http.get<{ message: string }>(
+      this.baseUrl + '/courses/' + courseId
+    );
   }
 }

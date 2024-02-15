@@ -16,10 +16,13 @@ public interface CourseRepository
 
     @Query("select new com.jfudali.coursesapp.course.dto.GetAllCoursesDto(c.idcourse, c.name, c.description, c.cost," +
             " c.category, c.creator,  (COUNT(o) > 0)) from Course c left join Ownership o on (o.course.idcourse = c" +
-            ".idcourse and o.user.email = :userEmail) where (:name is null or c.name like '%' + :name + '%') and " +
-            "(:categoryId is null or c.category.idcategory =  :categoryId) group by c")
+            ".idcourse and o.user.email = :userEmail) where (:name is null or" +
+            " c.name like %:name%) and " +
+            "(:category is null or c.category.name like :category) " +
+            "group" +
+            " by c")
     Page<GetAllCoursesDto> findAll(@Param("userEmail") String userEmail, @Param("name") String name, @Param(
-            "categoryId") Integer categoryId, Pageable pageable);
+            "category") String category, Pageable pageable);
 
     Page<Course> findCoursesByCreatorEmail(String email, Pageable pageable);
 }

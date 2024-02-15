@@ -16,6 +16,7 @@ mat-nav-list {
 }
 .content {
   padding: 10px 0;
+  min-height: 90vh;
 }
 footer {
   background-color: mat.get-color-from-palette(mat.$deep-purple-palette, 500);

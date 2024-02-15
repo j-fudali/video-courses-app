@@ -20,6 +20,8 @@ public class GetCourseById {
     private Category category;
     private PublicUserDto creator;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isBought;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<PublicLessonDto> lessons;
 
 }

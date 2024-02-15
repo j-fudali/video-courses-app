@@ -53,7 +53,12 @@ import { environment } from '../../../../environments/environment.development';
           >
             <mat-icon>attach_file</mat-icon>Upload video
           </button>
-          <input (change)="createPreview($event)" #file type="file" />
+          <input
+            (change)="createPreview($event)"
+            #file
+            type="file"
+            accept="video/*video/mp4,video/x-m4v,video/*"
+          />
           @if(video){
           <div class="video-wrapper" [style.width]="isGtXs ? '60%' : '100%'">
             <video

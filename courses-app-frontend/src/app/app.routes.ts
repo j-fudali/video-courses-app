@@ -15,6 +15,7 @@ export const routes: Routes = [
   {
     path: 'purchase',
     loadChildren: () => import('./purchase/feature/purchase.routes'),
+    canActivate: [authGuard],
   },
   {
     path: 'home',
@@ -22,8 +23,7 @@ export const routes: Routes = [
   },
   {
     path: 'courses',
-    loadChildren: () =>
-      import('./courses/feature/course-shell/course-shell.routes'),
+    loadChildren: () => import('./courses/feature/course-shell/course.routes'),
   },
   {
     path: 'me',
@@ -40,5 +40,17 @@ export const routes: Routes = [
     loadChildren: () => import('./sign-up/feature/sign-up.routes'),
     canActivate: [alreadyLoggedIn],
   },
+  {
+    path: 'reset-password',
+    loadChildren: () =>
+      import(
+        './reset-password/feature/reset-password-shell/reset-password.routes'
+      ),
+  },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: '**',
+    loadChildren: () =>
+      import('./page-not-found/feature/page-not-found.routes'),
+  },
 ];

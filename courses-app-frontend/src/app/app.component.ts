@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -9,8 +9,6 @@ import { ShoppingCartService } from './shared/data-access/shopping-cart.service'
 import { Link } from './shared/interfaces/Link';
 import { HeaderComponent } from './ui/components/header/header.component';
 import { map, tap } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { UserRole } from './shared/util/roles.enum';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -43,6 +41,12 @@ export class AppComponent implements OnInit {
     {
       name: 'My courses',
       path: '/me/courses',
+      isAdmin: false,
+      isActive: false,
+    },
+    {
+      name: 'My profile',
+      path: '/me/profile',
       isAdmin: false,
       isActive: false,
     },

@@ -1,6 +1,9 @@
 package com.jfudali.coursesapp.auth.service;
 
 import com.jfudali.coursesapp.user.service.UserService;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +20,8 @@ import com.jfudali.coursesapp.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class
@@ -26,7 +31,8 @@ AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final JavaMailSender javaMailSender;
+    private final Environment environment;
     @Transactional
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user;
@@ -49,4 +55,6 @@ AuthService {
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
+
+
 }

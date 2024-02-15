@@ -50,14 +50,18 @@ public class CourseService {
         public Course getCourseById(Integer id) throws NotFoundException {
             return courseRepository.findById(id)
                         .orElseThrow(() -> new NotFoundException("Course not found"));
+
         }
 
-        public Page<GetAllCoursesDto> getAllCourses(String name, Integer categoryId, String userEmail, Pageable pagination) {
-        return  courseRepository.findAll(userEmail, name, categoryId, pagination);
+        public Page<GetAllCoursesDto> getAllCourses(String name,
+                                                    String category,
+                                                    String userEmail, Pageable pagination) {
+        return  courseRepository.findAll(userEmail, name, category, pagination);
         }
-        public Page<Course> getAllCourses(String name, Integer categoryId, Pageable pagination) {
+        public Page<Course> getAllCourses(String name, String  category,
+                                          Pageable pagination) {
                 Specification<Course> spec = Specification.where(CourseQuerySpecification.withName(name))
-                                .and(CourseQuerySpecification.withCategoryId(categoryId));
+                                .and(CourseQuerySpecification.withCategory(category));
                 return  courseRepository.findAll(spec, pagination);
         }
         @Transactional
@@ -80,10 +84,6 @@ public class CourseService {
                 return course;
         }
 
-        public ResponseMessage deleteCourse(Integer id, String userEmail) throws NotFoundException, OwnershipException {
-                courseRepository.deleteById(id);
-                return new ResponseMessage("Course has been deleted");
-        }
 
         @Transactional
         public void verifyUserPassedCourse(Integer courseId, String userEmail){

@@ -96,7 +96,7 @@ export class EditorComponent implements OnInit {
         ...courseRest,
         categoryId: (category as Category).idcategory,
       });
-      if (lessons.length > 0) {
+      if (lessons && lessons.length > 0) {
         (lessons as (Lesson & LessonDetail)[]).forEach(
           (l: Lesson & LessonDetail, index) => {
             this.addLesson(l);

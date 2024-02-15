@@ -11,6 +11,7 @@ import com.jfudali.coursesapp.lesson.model.Lesson;
 import com.jfudali.coursesapp.lesson.service.LessonService;
 import com.jfudali.coursesapp.quiz.dto.QuizDto;
 import com.jfudali.coursesapp.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,13 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/courses/{courseId}/lessons")
- @Validated
 public class LessonController {
     private final LessonService lessonService;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final CourseService courseService;
     @PostMapping()
     public ResponseEntity<Map<String, Integer>> createLesson(@PathVariable(name = "courseId") Integer courseId,
-                                            @RequestBody CreateLessonDto createLessonDto)
+                                           @Valid @RequestBody CreateLessonDto createLessonDto)
             throws NotFoundException, OwnershipException {
         Integer lessonId = lessonService.createLesson(courseId, createLessonDto).getIdlesson();
         Map<String , Integer> response = new HashMap<>();
@@ -60,7 +59,7 @@ public class LessonController {
     @PatchMapping("/{lessonId}")
     public  ResponseEntity<UpdateLessonDto> updateLesson(
             @PathVariable("courseId") Integer courseId,@PathVariable("lessonId") Integer lessonId,
-            @RequestBody UpdateLessonDto updateLessonDto)
+            @Valid @RequestBody UpdateLessonDto updateLessonDto)
             throws NotFoundException, OwnershipException {
         return new ResponseEntity<>(modelMapper.map(
                 lessonService.updateLesson(courseId,lessonId,updateLessonDto), UpdateLessonDto.class), HttpStatus.OK);

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,31 @@ public class UserService {
     private final CourseRepository courseRepository;
     private final OwnershipRepository ownershipRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    public String changePassword(String newPassword, String userEmail){
+        User user = this.getUserByEmail(userEmail);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return "Password has been changed";
+    }
 
     public User getUserByEmail(String email) throws NotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
     }
-
+    @Transactional
+    public String updateUser(String firstname, String lastname,
+                            String userEmail){
+        User user = this.getUserByEmail(userEmail);
+        if(firstname != null){
+            user.setFirstname(firstname);
+        }
+        if(lastname != null){
+            user.setLastname(lastname);
+        }
+        userRepository.save(user);
+        return "User has been updated";
+    }
     @Transactional(readOnly = true)
     public Page<?> getCurrentUserCourses(String type, String email, Pageable pageable)
             throws NotFoundException {
@@ -34,12 +55,5 @@ public class UserService {
         }
         return ownershipRepository.findCoursesOwnedByUser(email, pageable);
     }
-    @Transactional(readOnly = true)
-    public ResponseMessage checkHasBought(Integer courseId, String userEmail){
-        boolean alreadyBought = ownershipRepository.findByCourseIdcourseAndUserEmail(courseId, userEmail).isPresent();
-        if(alreadyBought){
-            return new ResponseMessage("User already bought course");
-        }
-        throw new NotFoundException("Ownership not found");
-    }
+    
 }

@@ -1,12 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { SearchFilters } from '../../shared/interfaces/SearchFilters';
-import { Observable, map, scan, shareReplay, tap } from 'rxjs';
 import { Course } from '../../shared/interfaces/Course';
 import { Pagination } from '../../shared/interfaces/Pagination';
 import { PaginationRequest } from '../../shared/interfaces/PaginationRequest';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { CourseDetail } from '../../shared/interfaces/CourseDetail';
 
 @Injectable({

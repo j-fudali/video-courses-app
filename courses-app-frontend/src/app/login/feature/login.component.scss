@@ -4,13 +4,17 @@
   justify-content: center;
   align-items: center;
 }
-mat-card {
-  min-width: 40%;
-}
-form {
+
+mat-card-content {
   display: flex;
   flex-direction: column;
 }
 a {
   width: 100%;
+}
+mat-card-actions {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 5px;
 }
