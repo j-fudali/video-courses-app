@@ -5,6 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { JwtToken } from '../interfaces/JwtToken';
 import { ShoppingCartService } from './shopping-cart.service';
 import { UserRole } from '../util/roles.enum';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +51,7 @@ export class AuthService {
   logout() {
     this._isLoggedIn.set(false);
     this._isAdmin.set(false);
-    this.cookies.delete('token', '/', 'localhost');
+    this.cookies.delete('token', '/', environment.domain);
     this.router.navigate(['/']);
   }
 }

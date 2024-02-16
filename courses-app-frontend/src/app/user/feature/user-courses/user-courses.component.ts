@@ -50,8 +50,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       </mat-form-field>
       <mat-divider></mat-divider>
       <mat-nav-list class="courses-list">
-        @if(courses$ | async; as courses){ @for(course of courses; track
-        course.idcourse){
+        @if(courses$ | async; as courses){ @if(!loading){ @for(course of
+        courses; track course.idcourse){
         <app-user-courses-list-item
           [course]="course"
           [type]="type"
@@ -63,7 +63,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
           <h2><i>No courses here</i></h2>
         </div>
 
-        } } @if(loading){
+        } } @else{
+        <div class="spinner">
+          <mat-spinner mode="indeterminate"></mat-spinner>
+        </div>
+        } } @else{
         <div class="spinner">
           <mat-spinner mode="indeterminate"></mat-spinner>
         </div>

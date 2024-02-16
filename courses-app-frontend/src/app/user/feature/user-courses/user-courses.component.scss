@@ -29,13 +29,10 @@ mat-form-field {
 }
 .spinner {
   position: absolute;
+  width: 100%;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background-color: hsla(0, 0%, 100%, 0.5);
-  z-index: 2;
+  padding-top: 20px;
 }

@@ -13,7 +13,7 @@ import { CategoriesService } from '../../../shared/data-access/categories.servic
 import { CoursesService } from '../../data-access/courses.service';
 import { Router } from '@angular/router';
 import { SearchFilters } from '../../../shared/interfaces/SearchFilters';
-import { BehaviorSubject, Observable, concatMap, map, scan } from 'rxjs';
+import { BehaviorSubject, Observable, concatMap, map, scan, tap } from 'rxjs';
 import { Course } from '../../../shared/interfaces/Course';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDividerModule } from '@angular/material/divider';
@@ -22,6 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CourseCardComponent } from '../../ui/course-card/course-card.component';
 import { AuthService } from '../../../shared/data-access/auth.service';
 import { ShoppingCartService } from '../../../shared/data-access/shopping-cart.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   standalone: true,
   imports: [
@@ -30,6 +31,7 @@ import { ShoppingCartService } from '../../../shared/data-access/shopping-cart.s
     MatDividerModule,
     InfiniteScrollModule,
     CourseCardComponent,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './course-list.component.html',
   styleUrl: './course-list.component.scss',
@@ -48,7 +50,7 @@ export class CoursesListComponent implements OnInit {
 
   shoppingCart = this.shoppinCartService.coursesInCart;
   isLoggedIn = this.authService.$isLoggedIn;
-
+  loading: boolean = false;
   userId = this.authService.getUserId() || null;
   breakpoints$ = this.breakpoints.observe([
     Breakpoints.Medium,
@@ -59,12 +61,13 @@ export class CoursesListComponent implements OnInit {
   categories$ = this.categoriesService.getCategories();
   courses$: Observable<Course[]>;
   page$ = new BehaviorSubject(0);
-  size: number = 10;
+  size: number = 2;
   totalElements: number;
   totalPages: number;
 
   ngOnInit(): void {
     this.courses$ = this.page$.pipe(
+      tap(() => (this.loading = true)),
       takeUntilDestroyed(this.destroyRef),
       concatMap((page) =>
         this.coursesService.getCourses(
@@ -77,11 +80,13 @@ export class CoursesListComponent implements OnInit {
         this.totalPages = response.totalPages;
         return response.content;
       }),
-      scan((acc, val) => (this.page$.getValue() == 0 ? val : acc.concat(val)))
+      scan((acc, val) => (this.page$.getValue() == 0 ? val : acc.concat(val))),
+      tap(() => (this.loading = false))
     );
   }
 
   search(filters: SearchFilters) {
+    // this.loading = true;
     (this.top.nativeElement as HTMLDivElement).scrollIntoView({
       behavior: 'smooth',
     });
@@ -91,6 +96,7 @@ export class CoursesListComponent implements OnInit {
     this.page$.next(0);
   }
   showAll() {
+    // this.loading = true;
     (this.top.nativeElement as HTMLDivElement).scrollIntoView({
       behavior: 'smooth',
     });
