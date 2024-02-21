@@ -57,7 +57,7 @@ public class SecurityConfig {
                                                 (authorizeHttpRequests) -> {
                                                     authorizeHttpRequests
                                                             .requestMatchers(
-                                                                    "/actuator" +
+
                                                                             "/**","/auth" +
                                                                             "/**", "/reset-password/**", "/error", "/categories")
                                                             .permitAll()
@@ -101,8 +101,6 @@ public class SecurityConfig {
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration cors = new CorsConfiguration();
-                System.out.println(environment.getProperty(
-                        "DOMAIN"));
                 cors.setAllowedOrigins(
                         List.of(Objects.requireNonNull(environment.getProperty(
                                 "DOMAIN"))));

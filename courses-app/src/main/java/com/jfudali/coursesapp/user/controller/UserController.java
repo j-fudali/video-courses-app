@@ -37,7 +37,7 @@ public class UserController {
     }
     @PostMapping("/change-password")
     public ResponseEntity<ResponseMessage> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, Principal principal ){
-        return new ResponseEntity<>(new ResponseMessage(userService.changePassword(changePasswordDto.getNewPassword(), principal.getName())), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage(userService.changePassword(changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(), principal.getName())), HttpStatus.OK);
     }
     @GetMapping(value = "/courses")
     public ResponseEntity<Page<?>> getCurrentUserOwnedCourses(@RequestParam(name = "type") String type, Principal principal, Pageable pageable)

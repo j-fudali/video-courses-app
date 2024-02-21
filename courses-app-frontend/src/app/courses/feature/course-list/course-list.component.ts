@@ -61,7 +61,7 @@ export class CoursesListComponent implements OnInit {
   categories$ = this.categoriesService.getCategories();
   courses$: Observable<Course[]>;
   page$ = new BehaviorSubject(0);
-  size: number = 2;
+  size: number = 10;
   totalElements: number;
   totalPages: number;
 

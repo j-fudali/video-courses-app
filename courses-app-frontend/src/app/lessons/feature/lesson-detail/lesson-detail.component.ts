@@ -1,18 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { Observable, catchError, ignoreElements, of, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LessonDetail } from '../../../shared/interfaces/LessonDetail';
 import { LessonsService } from '../../data-access/lessons.service';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { environment } from '../../../../environments/environment.development';
+import { RouterModule } from '@angular/router';
 import { QuizComponent } from '../../ui/quiz/quiz.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UserQuestionAnswers } from '../../../shared/interfaces/UserQuizAnswers';
-import { HttpErrorResponse } from '@angular/common/http';
-import { HttpErrorMessage } from '../../../shared/interfaces/HttpErrorMessage';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-lesson-detail',
   standalone: true,

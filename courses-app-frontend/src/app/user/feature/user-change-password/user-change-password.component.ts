@@ -13,6 +13,7 @@ import { map } from 'rxjs';
   standalone: true,
   imports: [CommonModule, SetNewPasswordComponent],
   template: `<app-set-new-password
+    [showOldPasswordField]="true"
     [title]="'Change password'"
     class="form"
     (onSetPassword)="change($event)"
@@ -30,13 +31,15 @@ export class UserChangePasswordComponent {
     .observe([Breakpoints.XSmall])
     .pipe(map((v) => v.matches));
 
-  change(password: string) {
-    this.userService
-      .changePassword(password)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ message }) => {
-        this.snakcbar.open(message, 'X');
-        this.router.navigate(['/me/profile']);
-      });
+  change(values: { newPassword: string; oldPassword?: string }) {
+    if (values.oldPassword && values.newPassword) {
+      this.userService
+        .changePassword(values.oldPassword, values.newPassword)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(({ message }) => {
+          this.snakcbar.open(message, 'X');
+          this.router.navigate(['/me/profile']);
+        });
+    }
   }
 }

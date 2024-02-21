@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Pagination } from '../../shared/interfaces/Pagination';
 import { PaginationRequest } from '../../shared/interfaces/PaginationRequest';
 import { UserCourse } from '../../shared/interfaces/UserCourse';
@@ -17,13 +17,12 @@ export class UserService {
   getUserProfile() {
     return this.http.get<UserProfile>(this.baseUrl);
   }
-  changePassword(newPassword: string) {
+  changePassword(oldPassword: string, newPassword: string) {
     return this.http.post<{ message: string }>(
       this.baseUrl + '/change-password',
-      { newPassword }
+      { oldPassword, newPassword }
     );
   }
-  resetPassword() {}
   updateUserProfle(firstname: string | null, lastname: string | null) {
     if (!firstname)
       return this.http.patch<{ message: string }>(this.baseUrl, { lastname });

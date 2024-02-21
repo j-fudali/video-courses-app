@@ -47,7 +47,11 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
             err.error.message == 'Quiz not found')
         )
       )
-        snackbar.open(err.error.message, 'X');
+        snackbar.open(
+          err.error.errors.map((err: string) => err + '\n') ||
+            err.error.message,
+          'X'
+        );
       throw err;
     })
   );

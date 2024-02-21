@@ -4,10 +4,17 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   inject,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,6 +42,16 @@ import { confirmPasswordValidator } from '../../util/passwordValidator';
           <h2 mat-card-title>{{ title }}</h2>
         </mat-card-header>
         <mat-card-content>
+          @if(showOldPasswordField){
+          <mat-form-field>
+            <mat-label>Old password</mat-label>
+            <input type="password" matInput formControlName="oldPassword" />
+            @if(oldPassword.invalid){
+            <mat-error> Old password is required </mat-error>
+            }
+          </mat-form-field>
+
+          }
           <mat-form-field>
             <mat-label>New password</mat-label>
             <input type="password" matInput formControlName="newPassword" />
@@ -73,35 +90,54 @@ import { confirmPasswordValidator } from '../../util/passwordValidator';
   styleUrl: './set-new-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SetNewPasswordComponent {
+export class SetNewPasswordComponent implements OnInit {
   @Input({ required: true }) title: string;
-  @Output() onSetPassword = new EventEmitter<string>();
+  @Input() showOldPasswordField = false;
+  @Output() onSetPassword = new EventEmitter<{
+    newPassword: string;
+    oldPassword?: string;
+  }>();
   private fb = inject(FormBuilder);
   matcher = new DirtyTouchedErrorStateMatcher();
-  setPasswordForm = this.fb.nonNullable.group(
-    {
-      newPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(
-            /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-          ),
+  setPasswordForm: FormGroup;
+  ngOnInit(): void {
+    this.setPasswordForm = this.fb.nonNullable.group(
+      {
+        newPassword: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+            ),
+          ],
         ],
-      ],
-      reNewPassword: ['', [Validators.required]],
-    },
-    { validators: confirmPasswordValidator('newPassword', 'reNewPassword') }
-  );
+        reNewPassword: ['', [Validators.required]],
+      },
+      { validators: confirmPasswordValidator('newPassword', 'reNewPassword') }
+    );
+    if (this.showOldPasswordField) {
+      this.setPasswordForm.addControl(
+        'oldPassword',
+        this.fb.control('', Validators.required)
+      );
+    }
+  }
+  get oldPassword() {
+    return this.setPasswordForm.get('oldPassword') as FormControl;
+  }
   get newPassword() {
-    return this.setPasswordForm.controls.newPassword;
+    return this.setPasswordForm.get('newPassword') as FormControl;
   }
   get repeatNewPassword() {
-    return this.setPasswordForm.controls.reNewPassword;
+    return this.setPasswordForm.get('reNewPassword') as FormControl;
   }
   submit() {
     if (this.setPasswordForm.valid && this.setPasswordForm.dirty) {
-      this.onSetPassword.emit(this.setPasswordForm.controls.newPassword.value);
+      this.onSetPassword.emit({
+        newPassword: this.setPasswordForm.get('newPassword')?.value,
+        oldPassword: this.setPasswordForm.get('oldPassword')?.value,
+      });
     }
   }
 }

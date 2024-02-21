@@ -5,7 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { JwtToken } from '../interfaces/JwtToken';
 import { ShoppingCartService } from './shopping-cart.service';
 import { UserRole } from '../util/roles.enum';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +43,7 @@ export class AuthService {
   decodeAndStoreTokenData(token: string) {
     const expiration = new Date();
     expiration.setDate(expiration.getDate() + 1);
-    this.cookies.set('token', token, expiration, '/');
+    this.cookies.set('token', token, expiration, '/', environment.domain);
     this.checkIsLoggedIn();
     this.checkIsAdmin();
   }

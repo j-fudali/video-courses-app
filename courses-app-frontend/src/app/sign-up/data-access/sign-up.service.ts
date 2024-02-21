@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
 import { SignUpCredentials } from '../../shared/interfaces/SignUpCredentials';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',

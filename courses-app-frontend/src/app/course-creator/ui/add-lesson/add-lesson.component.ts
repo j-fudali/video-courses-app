@@ -7,7 +7,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -15,8 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AddQuizComponent } from '../add-quiz/add-quiz.component';
-import { BreakpointState } from '@angular/cdk/layout';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-add-lesson',
@@ -35,7 +34,7 @@ import { environment } from '../../../../environments/environment.development';
   template: `
     <mat-expansion-panel hideToggle>
       <mat-expansion-panel-header>
-        <mat-panel-title>{{ title?.value || 'Lesson title' }}</mat-panel-title>
+        <mat-panel-title>{{ title.value || 'Lesson title' }}</mat-panel-title>
       </mat-expansion-panel-header>
       <form [formGroup]="lessonGroup">
         <div
@@ -44,16 +43,34 @@ import { environment } from '../../../../environments/environment.development';
           [style.alignItems]="isGtXs ? 'center' : 'flex-start'"
           [style.justifyContent]="isGtXs ? 'space-between' : 'flex-start'"
         >
-          <button
-            type="button"
-            mat-fab
-            extended
-            color="primary"
-            (click)="file.click()"
+          <div
+            class="upload-video-button"
+            [ngStyle]="
+              videoControl.value === null
+                ? { padding: '50px', width: '100%' }
+                : { padding: 0, width: 'auto' }
+            "
           >
-            <mat-icon>attach_file</mat-icon>Upload video
-          </button>
+            <button
+              #uploadVideoButton
+              type="button"
+              mat-fab
+              extended
+              color="primary"
+              (click)="file.click()"
+            >
+              <mat-icon>attach_file</mat-icon>Upload video
+            </button>
+            @if(videoControl.invalid && (videoControl.touched ||
+            videoControl.dirty) ){ @if(videoControl.hasError('required')){
+            <mat-error>Field is required</mat-error>
+            } @else {
+
+            <mat-error>Video max. size is 100MB</mat-error>
+            } }
+          </div>
           <input
+            (cancel)="createPreview($event)"
             (change)="createPreview($event)"
             #file
             type="file"
@@ -73,6 +90,12 @@ import { environment } from '../../../../environments/environment.development';
         <mat-form-field>
           <mat-label>Lesson title</mat-label>
           <input type="text" matInput formControlName="title" />
+          @if(title.invalid){
+          <mat-error>
+            @if(title.hasError('required')){ Field is required } @else{ Title
+            max. length is 100 characters }
+          </mat-error>
+          }
         </mat-form-field>
         <mat-form-field>
           <mat-label>Lesson description</mat-label>
@@ -125,11 +148,14 @@ export class AddLessonComponent implements OnInit {
     if (this.lessonGroup.get('video')?.value)
       this.video = environment.videoUrl + this.lessonGroup.get('video')?.value;
   }
+  get videoControl() {
+    return this.lessonGroup.get('video') as FormControl;
+  }
   get title() {
-    return this.lessonGroup.get('title');
+    return this.lessonGroup.get('title') as FormControl;
   }
   get description() {
-    return this.lessonGroup.get('description');
+    return this.lessonGroup.get('description') as FormControl;
   }
   get quiz() {
     return this.lessonGroup.get('quiz') as FormGroup;
@@ -139,10 +165,15 @@ export class AddLessonComponent implements OnInit {
       0
     );
     if (file) {
-      this.video = URL.createObjectURL(file);
-      this.lessonGroup.get('video')?.patchValue(file);
+      if (file.size > 100000000) {
+        this.lessonGroup.get('video')?.setErrors({ toBig: true });
+      } else {
+        this.video = URL.createObjectURL(file);
+        this.videoControl.patchValue(file);
+        this.videoControl.markAsDirty();
+      }
     }
-    this.lessonGroup.get('video')?.markAsDirty();
+    this.videoControl.markAsTouched();
   }
   removeLesson() {
     this.onRemoveLesson.emit(this.lessonId);

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
 import { LessonDetail } from '../../shared/interfaces/LessonDetail';
 import { UserQuestionAnswers } from '../../shared/interfaces/UserQuizAnswers';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',

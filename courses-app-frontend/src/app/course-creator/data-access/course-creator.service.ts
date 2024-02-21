@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
 import { NewCourse } from '../../shared/interfaces/NewCourse';
 import { NewLesson } from '../../shared/interfaces/NewLesson';
-import { NewQuiz } from '../../shared/interfaces/NewQuiz';
 import { QuestionToSet } from '../../shared/interfaces/QuestionToSet';
 import { UpdateCourse } from '../../shared/interfaces/UpdateCourse';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +52,6 @@ export class CourseCreatorService {
     );
   }
   deleteQuiz(courseId: number, lessonId: number) {
-    console.log('quiz delete');
     return this.http.delete(
       `${this.baseUrl}/${courseId}/lessons/${lessonId}/quiz`
     );

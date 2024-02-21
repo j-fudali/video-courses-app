@@ -13,7 +13,7 @@
                 <button mat-button (click)="nextStep()">Next</button>
             </mat-action-row>
         </mat-expansion-panel>
-        <mat-expansion-panel [expanded]="step === 1">
+        <mat-expansion-panel [expanded]="step === 1 || lessons.controls.length > 0">
             <mat-expansion-panel-header><mat-panel-title>
                     Add lessons
                 </mat-panel-title>

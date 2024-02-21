@@ -32,10 +32,10 @@ export class ResetPasswordConfirmComponent {
   isXSm$ = this.breakpointObs
     .observe([Breakpoints.XSmall])
     .pipe(map((v) => v.matches));
-  setPassword(password: string) {
+  setPassword(value: { newPassword: string }) {
     const token = this.route.snapshot.queryParamMap.get('token') as string;
     this.resetPasswordService
-      .resetPasswordConfirm(token, password)
+      .resetPasswordConfirm(token, value.newPassword)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(({ message }) => {
         this.router.navigate(['/login']);

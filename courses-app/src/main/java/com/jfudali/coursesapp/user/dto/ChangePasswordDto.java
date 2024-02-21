@@ -9,6 +9,9 @@ import lombok.Data;
 public class ChangePasswordDto {
     @NotBlank(message = "New password cannot be empty")
     @NotNull(message = "New password cannot be null")
+    private String oldPassword;
+    @NotBlank(message = "New password cannot be empty")
+    @NotNull(message = "New password cannot be null")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$", message = "Password is incorrect")
     private String newPassword;
 }

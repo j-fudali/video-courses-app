@@ -91,9 +91,8 @@ public class CourseService {
                 User user = this.userService.getUserByEmail(userEmail);
                 if(course.getLessons().size() == user.getPassedLessons().stream().filter(lesson -> lesson.getCourse().equals(course)).toList().size()){
                         Ownership ownership =
-                                this.ownershipRepository.findById(new OwnershipKey(course.getIdcourse(), user.getIduser())).orElseThrow(() -> new NotFoundException("Ownerhsip not found"));
+                                this.ownershipRepository.findById(new OwnershipKey(course.getIdcourse(), user.getIduser())).orElseThrow(() -> new NotFoundException("Ownership not found"));
                         ownership.setIsCompleted(true);
-                        System.out.println(ownership);
                         ownershipRepository.save(ownership);
                 }
         }

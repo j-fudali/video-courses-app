@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +26,16 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public String changePassword(String newPassword, String userEmail){
+    public String changePassword(String oldPassword, String newPassword,
+                                 String userEmail){
         User user = this.getUserByEmail(userEmail);
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-        return "Password has been changed";
+        if(passwordEncoder.matches(oldPassword, user.getPassword())){
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return "Password has been changed";
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old " +
+                "password is incorrect");
     }
 
     public User getUserByEmail(String email) throws NotFoundException {
