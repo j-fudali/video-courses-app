@@ -9,6 +9,8 @@
 - Adding and removing courses from shopping cart
 - Reading details about courses
 - Doing video lessons and optionally solving quizzes to pass them
+- Managing user profile, changing data and password
+- Reset forgotten password
 #### As a creator of courses you can additionally:
 - Creating new courses with lessons and optional quizzes
 - Updating your courses
